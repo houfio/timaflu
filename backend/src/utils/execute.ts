@@ -1,6 +1,6 @@
 import { Connection } from 'mysql';
 
-export function execute<T>(connection: Connection, query: string, values?: object) {
+export function execute<T = any>(connection: Connection, query: string, values?: string[]) {
   return new Promise<T[]>((resolve, reject) => connection.query(query, values, (err, results) => {
     if (err) {
       reject(err);

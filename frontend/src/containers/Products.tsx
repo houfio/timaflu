@@ -4,6 +4,7 @@ import { useQuery } from 'react-apollo-hooks';
 
 import { Content } from '../components/Content';
 import { Table } from '../components/Table';
+import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
 
 import { Loading } from './Loading';
@@ -14,10 +15,11 @@ type Product = Identifiable & {
 };
 
 export function Products() {
+  const { history } = useRouter();
   const { loading, data } = useQuery<{
     products: Product[]
   }>(gql`
-    query {
+    query Products {
       products {
         id
         name
@@ -42,7 +44,7 @@ export function Products() {
               heading: 'Code'
             }
           }}
-          onClick={console.log}
+          onClick={({ id }) => history.push(`/products/${id}`)}
         />
       ) : (
         <Loading/>

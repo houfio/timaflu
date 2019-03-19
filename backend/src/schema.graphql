@@ -2,12 +2,44 @@
 ### Do not make changes to this file directly
 
 
+type Contact {
+  address: String!
+  city: String!
+  company: String
+  country: String!
+  first_name: String!
+  id: ID!
+  last_name: String!
+  postal_code: String!
+  telephone: String!
+  website: String
+}
+
+type Manufacturer {
+  contact: Contact!
+  id: ID!
+}
+
 type Product {
   code: String!
+  contents: String
+  description: String
+  description_short: String
   id: ID!
+  location: String
+  manufacturer: Manufacturer!
+  min_order: String
+  min_stock: Int
   name: String!
+  packaging: String
+  packaging_amount: String
+  packaging_size: String
+  price: Float!
+  sold_since: String
+  stock: Int
 }
 
 type Query {
+  product(id: ID!): Product!
   products: [Product!]!
 }

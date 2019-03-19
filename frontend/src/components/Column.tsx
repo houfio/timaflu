@@ -15,7 +15,6 @@ export function Column(props: Props & HTMLAttributes<HTMLDivElement>) {
 }
 
 const StyledColumn = styled.div<{ breakpoints: Breakpoints<number> }>`
-  display: flex;
   flex: 0 0 100%;
   ${(props) => forBreakpoints(props.breakpoints, (value) => `
     flex-basis: ${100 / 12 * value}%;

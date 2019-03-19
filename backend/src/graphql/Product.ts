@@ -23,7 +23,7 @@ export const Product = objectType({
     t.field('manufacturer', {
       type: 'Manufacturer',
       resolve: async ({ id }, args, { db }) => {
-        const query = 'SELECT * FROM manufacturer WHERE id = (SELECT manufacturer_id FROM product WHERE id = ?)';
+        const query = `SELECT * FROM manufacturer WHERE id = (SELECT manufacturer_id FROM product WHERE id = ?)`;
         const result = await execute(db, query, [id]);
 
         return result[0];

@@ -40,6 +40,7 @@ type Product {
 }
 
 type Query {
-  product(id: ID!): Product!
+  manufacturers(productId: ID!): [Manufacturer!]!
+  product(id: ID!): Product
   products: [Product!]!
 }

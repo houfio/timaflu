@@ -75,11 +75,29 @@ const StyledHead = styled.thead`
 `;
 
 const StyledRow = styled.tr<{ clickable: boolean }>`
+  position: relative;
   display: block;
   padding: .5rem;
+  border-radius: .5rem;
   transition: background-color .25s ease, transform .1s ease;
   :not(:last-child) {
-    border-bottom: 2px solid #dadada;
+    margin-bottom: 2px;
+    ::after {
+      content: "";
+      position: absolute;
+      display: block;
+      width: 100%;
+      height: 2px;
+      left: 0;
+      bottom: -2px;
+      background-color: #dadada;
+      ${forBreakpoint(Breakpoint.Desktop, `
+        display: none;
+      `)};
+    }
+    ${forBreakpoint(Breakpoint.Desktop, `
+      margin-bottom: 0;
+    `)};
   }
   ${(props) => props.clickable && `
     :hover {
@@ -101,6 +119,14 @@ const StyledData = styled.td<{ heading: string }>`
   display: block;
   padding: .5rem;
   text-align: right;
+  :first-child {
+    border-top-left-radius: .5rem;
+    border-bottom-left-radius: .5rem;
+  }
+  :last-child {
+    border-top-right-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+  }
   ::before {
     content: "${(props) => props.heading}";
     float: left;

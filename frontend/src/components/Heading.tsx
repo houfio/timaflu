@@ -25,6 +25,7 @@ const types: Record<HeadingType, SerializedStyles> = {
   h2: css`
     color: rgba(0, 0, 0, .65);
     font-size: 1.5rem;
+    font-weight: normal;
   `,
   h3: css`
     margin-top: -.5rem;

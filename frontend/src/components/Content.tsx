@@ -43,6 +43,8 @@ const StyledHeader = styled.div`
 `;
 
 const StyledInner = styled.div`
+  display: flex;
+  flex-direction: column;
   flex: 1;
   margin: 1rem;
 `;

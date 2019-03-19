@@ -24,7 +24,7 @@ export function Root() {
           }
           *:focus {
             outline: none;
-            box-shadow: 0 0 0 2px dodgerblue;
+            box-shadow: 0 0 0 2px inset dodgerblue;
           }
           body {
             overflow-y: scroll;

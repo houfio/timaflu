@@ -36,7 +36,7 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
         </StyledHead>
         <tbody>
           {rows.map((row) => (
-            <StyledRow key={row.id} clickable={Boolean(onClick)} onClick={() => onClick && onClick(row)}>
+            <StyledRow key={row.id} clickable={Boolean(onClick)} onClick={() => onClick && onClick(row)} tabIndex={0}>
               {columnKeys.map((key) => {
                 const column = columns[key]!;
 
@@ -77,7 +77,7 @@ const StyledHead = styled.thead`
 const StyledRow = styled.tr<{ clickable: boolean }>`
   display: block;
   padding: .5rem;
-  transition: background-color .25s ease;
+  transition: background-color .25s ease, transform .1s ease;
   :not(:last-child) {
     border-bottom: 2px solid #dadada;
   }
@@ -85,6 +85,9 @@ const StyledRow = styled.tr<{ clickable: boolean }>`
     :hover {
       cursor: pointer;
       background-color: white;
+    }
+    :active {
+      transform: scale(.99);
     }
   `};
   ${forBreakpoint(Breakpoint.Desktop, `

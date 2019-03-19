@@ -13,7 +13,7 @@ export function Loading() {
 
 const StyledLoading = styled.div`
   display: flex;
+  flex: 1;
   justify-content: center;
   align-items: center;
-  height: 100%;
 `;

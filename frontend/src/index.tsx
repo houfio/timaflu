@@ -1,4 +1,5 @@
 import ApolloClient, { InMemoryCache } from 'apollo-boost';
+import 'normalize.css';
 import React from 'react';
 import { ApolloProvider } from 'react-apollo-hooks';
 import { render } from 'react-dom';

@@ -7,8 +7,4 @@ export enum Breakpoint {
 
 export type Breakpoints<T> = Partial<Record<Breakpoint, T>>;
 
-export type Product = {
-  id: string,
-  name: string,
-  code: string
-};
+export type HeadingType = 'h1' | 'h2' | 'h3';

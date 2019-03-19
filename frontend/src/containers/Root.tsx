@@ -4,7 +4,11 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { Sidebar } from '../components/Sidebar';
 
+import { Customers } from './Customers';
 import { Dashboard } from './Dashboard';
+import { Invoices } from './Invoices';
+import { Orders } from './Orders';
+import { Products } from './Products';
 
 export function Root() {
   return (
@@ -35,6 +39,10 @@ export function Root() {
         <Sidebar/>
         <Switch>
           <Route path="/" exact={true} component={Dashboard}/>
+          <Route path="/orders" exact={true} component={Orders}/>
+          <Route path="/invoices" exact={true} component={Invoices}/>
+          <Route path="/customers" exact={true} component={Customers}/>
+          <Route path="/products" exact={true} component={Products}/>
         </Switch>
       </BrowserRouter>
     </>

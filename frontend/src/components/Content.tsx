@@ -27,6 +27,9 @@ export function Content({ children, title }: Props) {
 }
 
 const StyledContent = styled.main`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   margin-left: 4rem;
   transition: margin-left .5s ease;
   ${forBreakpoint(Breakpoint.TabletLandscape, `
@@ -36,9 +39,10 @@ const StyledContent = styled.main`
 
 const StyledHeader = styled.div`
   padding: 2.5rem 1rem 2rem;
-  background-color: #f2f2f2;
+  background-color: whitesmoke;
 `;
 
 const StyledInner = styled.div`
+  flex: 1;
   margin: 1rem;
 `;

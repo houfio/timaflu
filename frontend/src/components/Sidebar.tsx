@@ -1,5 +1,12 @@
 import styled from '@emotion/styled/macro';
-import { faPills, faReceipt, faTachometerAlt, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPills,
+  faReceipt,
+  faShoppingCart,
+  faTachometerAlt,
+  faTruck,
+  faUser
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 
@@ -26,6 +33,9 @@ export function Sidebar() {
       </SidebarItem>
       <SidebarItem icon={faUser} path="/customers">
         Klanten
+      </SidebarItem>
+      <SidebarItem icon={faShoppingCart} path="/products">
+        Producten
       </SidebarItem>
     </StyledSidebar>
   );

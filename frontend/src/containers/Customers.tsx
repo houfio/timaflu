@@ -2,8 +2,8 @@ import React from 'react';
 
 import { Content } from '../components/Content';
 
-export function Dashboard() {
+export function Customers() {
   return (
-    <Content title="Dashboard"/>
+    <Content title="Klanten"/>
   );
 }

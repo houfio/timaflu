@@ -68,7 +68,6 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
             {data.manufacturer.contact.company}
           </Heading>
 
-
           <Heading type="h2">
             Producten
           </Heading>

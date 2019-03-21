@@ -118,6 +118,7 @@ type Substance {
 type User {
   billing: [Contact!]!
   contact: Contact!
+  discount: Int!
   id: ID!
   orders: [Order!]!
   role: UserRole!

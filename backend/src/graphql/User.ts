@@ -45,5 +45,23 @@ export const User = objectType({
         )
       `, [id])
     });
+    t.int('discount', {
+      resolve: async ({ id }, args, { db }) => {
+        const query = `
+          SELECT
+            if(sum(l.total) >= 20000, 15,
+              if(sum(l.total) >= 10000, 10,
+                if(sum(l.total) > 0, 5, 0))) discount
+          FROM \`order\` o
+            JOIN order_line l ON o.id = l.order_id
+            JOIN user_billing b ON o.billing_id = b.id
+          WHERE b.user_id = ?
+            AND year(o.date) = year(now()) - 1;
+        `;
+        const result = await execute<{ discount: number }>(db, query, [id]);
+
+        return result[0].discount;
+      }
+    });
   }
 });

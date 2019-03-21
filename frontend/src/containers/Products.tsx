@@ -58,7 +58,7 @@ export function Products() {
           <Table<Product>
             rows={data.products}
             columns={{
-              stock: {
+              stock: [{
                 heading: 'Voorraad',
                 render: (value, { min_stock }) => min_stock ? (
                   <>
@@ -80,17 +80,17 @@ export function Products() {
                     {value}/{min_stock}
                   </>
                 ) : undefined
-              },
-              name: {
+              }],
+              name: [{
                 heading: 'Naam'
-              },
-              code: {
+              }],
+              code: [{
                 heading: 'Code'
-              },
-              manufacturer: {
+              }],
+              manufacturer: [{
                 heading: 'Fabrikant',
                 render: (value) => value.contact.company
-              }
+              }]
             }}
             onClick={({ id }) => history.push(`/products/${id}`)}
           />

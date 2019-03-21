@@ -53,7 +53,7 @@ export function Orders() {
           <Table<Order>
             rows={data.orders}
             columns={{
-              state: {
+              state: [{
                 heading: 'Status',
                 render: (value) => {
                   const { name, color, icon } = INVOICE_STATES[value];
@@ -65,19 +65,19 @@ export function Orders() {
                     </>
                   );
                 }
-              },
-              contact: {
+              }],
+              contact: [{
                 heading: 'Klant',
                 render: (value) => `${value.first_name} ${value.last_name}`
-              },
-              description: {
+              }],
+              description: [{
                 heading: 'Beschrijving',
                 render: (value) => value ? value.length > 20 ? `${value.substr(0, 20)}...` : value : undefined
-              },
-              total: {
+              }],
+              total: [{
                 heading: 'Prijs',
                 render: (value) => `€${value.toFixed(2)}`
-              }
+              }]
             }}
           />
         </>

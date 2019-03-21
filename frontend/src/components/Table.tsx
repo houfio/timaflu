@@ -1,18 +1,18 @@
 import styled from '@emotion/styled/macro';
+import { faMinus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactNode } from 'react';
 
 import { Breakpoint, Identifiable } from '../types';
 import { forBreakpoint } from '../utils/forBreakpoint';
-import { faMinus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type Props<T> = {
   rows: T[],
   columns: {
-    [K in keyof T]?: {
+    [K in keyof T]?: Array<{
       heading: string,
       render?: (value: T[K], row: T) => ReactNode | undefined
-    }
+    }>
   },
   onClick?: (row: T) => void
 };
@@ -25,15 +25,11 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
       <StyledTable>
         <StyledHead>
           <StyledRow clickable={false}>
-            {columnKeys.map((key) => {
-              const column = columns[key]!;
-
-              return (
-                <StyledHeading key={key as string}>
-                  {column.heading}
-                </StyledHeading>
-              );
-            })}
+            {columnKeys.map((key) => columns[key]!.map((column, index) => (
+              <StyledHeading key={`${key}-${index}`}>
+                {column.heading}
+              </StyledHeading>
+            )))}
           </StyledRow>
         </StyledHead>
         <tbody>
@@ -45,16 +41,19 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
               tabIndex={onClick ? 0 : undefined}
             >
               {columnKeys.map((key) => {
-                const column = columns[key]!;
-                const children = column.render ? column.render(row[key], row) : row[key];
+                const group = columns[key]!;
 
-                return (
-                  <StyledData key={key as string} heading={column.heading}>
-                    {children !== undefined ? children : (
-                      <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
-                    )}
-                  </StyledData>
-                );
+                return group.map((column, index) => {
+                  const children = column.render ? column.render(row[key], row) : row[key];
+
+                  return (
+                    <StyledData key={`${key}-${index}`} heading={column.heading}>
+                      {children !== undefined ? children : (
+                        <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
+                      )}
+                    </StyledData>
+                  );
+                });
               })}
             </StyledRow>
           ))}

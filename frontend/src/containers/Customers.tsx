@@ -3,10 +3,9 @@ import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
 
 import { Content } from '../components/Content';
+import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { Identifiable } from '../types';
-
-import { Loading } from './Loading';
 
 type Customers = Identifiable & {
   id: number,

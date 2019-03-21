@@ -13,9 +13,9 @@ export const Invoice = objectType({
         const query = `
           SELECT *
           FROM \`order\` o
-          WHERE o.id = ?
+          WHERE o.id = :order_id
         `;
-        const result = await execute<Order>(db, query, [order_id]);
+        const result = await execute<Order>(db, query, { order_id });
 
         return result[0];
       }
@@ -31,8 +31,8 @@ export const Invoice = objectType({
       resolve: ({ id }, args, { db }) => execute(db, `
         SELECT *
         FROM binned_product b
-        WHERE b.invoice_id = ?
-      `, [id])
+        WHERE b.invoice_id = :id
+      `, { id })
     });
   }
 });

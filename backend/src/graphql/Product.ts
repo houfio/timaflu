@@ -13,9 +13,9 @@ export const Product = objectType({
         const query = `
           SELECT *
           FROM manufacturer m
-          WHERE m.id = ?
+          WHERE m.id = :manufacturer_id
         `;
-        const result = await execute<Manufacturer>(db, query, [manufacturer_id]);
+        const result = await execute<Manufacturer>(db, query, { manufacturer_id });
 
         return result[0];
       }
@@ -42,9 +42,9 @@ export const Product = objectType({
         WHERE s.id IN (
           SELECT p.substance_id
           FROM product_substance p
-          WHERE p.product_id = ?
+          WHERE p.product_id = :id
         )
-      `, [id])
+      `, { id })
     });
   }
 });

@@ -40,21 +40,17 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
               onClick={() => onClick && onClick(row)}
               tabIndex={onClick ? 0 : undefined}
             >
-              {columnKeys.map((key) => {
-                const group = columns[key]!;
+              {columnKeys.map((key) => columns[key]!.map((column, index) => {
+                const children = column.render ? column.render(row[key], row) : row[key];
 
-                return group.map((column, index) => {
-                  const children = column.render ? column.render(row[key], row) : row[key];
-
-                  return (
-                    <StyledData key={`${key}-${index}`} heading={column.heading}>
-                      {children !== undefined ? children : (
-                        <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
-                      )}
-                    </StyledData>
-                  );
-                });
-              })}
+                return (
+                  <StyledData key={`${key}-${index}`} heading={column.heading}>
+                    {children !== undefined ? children : (
+                      <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
+                    )}
+                  </StyledData>
+                );
+              }))}
             </StyledRow>
           ))}
         </tbody>

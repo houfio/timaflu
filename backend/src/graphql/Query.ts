@@ -1,4 +1,4 @@
-import { arg, idArg, intArg, queryType } from 'yoga';
+import { arg, idArg, intArg, queryType, stringArg } from 'yoga';
 
 import { Manufacturer, Order, Product, User } from '../context';
 import { execute } from '../utils/execute';
@@ -15,9 +15,9 @@ export const Query = queryType({
         const query = `
           SELECT *
           FROM user u
-          WHERE u.id = ?
+          WHERE u.id = :id
         `;
-        const result = await execute<User>(db, query, [id]);
+        const result = await execute<User>(db, query, { id });
 
         return result.length ? result[0] : undefined!;
       }
@@ -25,16 +25,30 @@ export const Query = queryType({
     t.list.field('users', {
       type: 'User',
       args: {
-        role: arg({ type: 'UserRole', nullable: true })
+        role: arg({ type: 'UserRole', nullable: true }),
+        search: stringArg({ nullable: true }),
+        limit: intArg({ nullable: true })
       },
-      resolve: (root, { role }, { db }) => execute<User>(db, role === undefined ? `
-        SELECT *
-        FROM user
-      ` : `
+      resolve: (root, { search = '', role, limit }, { db }) => execute<User>(db, `
         SELECT *
         FROM user u
-        WHERE u.role = ?
-      `, [role])
+        WHERE (u.contact_id IN (
+          SELECT c.id
+          FROM contact c
+          WHERE concat(c.first_name, ' ', c.last_name) LIKE :search OR c.company LIKE :search
+        ) OR u.id IN (
+          SELECT b.user_id
+          FROM user_billing b
+            JOIN contact c ON b.contact_id = c.id
+          WHERE b.user_id = u.id AND (concat(c.first_name, ' ', c.last_name) LIKE :search OR c.company LIKE :search)
+        ))
+        ${role !== undefined ? `
+          AND u.role = :role
+        ` : ''}
+        ${limit !== undefined ? `
+          LIMIT :limit
+        ` : ''}
+      `, { search: `%${search}%`, role, limit })
     });
     t.field('product', {
       type: 'Product',
@@ -46,9 +60,9 @@ export const Query = queryType({
         const query = `
           SELECT *
           FROM product p
-          WHERE p.id = ?
+          WHERE p.id = :id
         `;
-        const result = await execute<Product>(db, query, [id]);
+        const result = await execute<Product>(db, query, { id });
 
         return result.length ? result[0] : undefined!;
       }
@@ -70,9 +84,9 @@ export const Query = queryType({
         const query = `
           SELECT *
           FROM manufacturer m
-          WHERE m.id = ?
+          WHERE m.id = :id
         `;
-        const result = await execute<Manufacturer>(db, query, [id]);
+        const result = await execute<Manufacturer>(db, query, { id });
 
         return result.length ? result[0] : undefined!;
       }
@@ -89,11 +103,11 @@ export const Query = queryType({
           WHERE m.id IN (
             SELECT p.manufacturer_id
             FROM product p
-              JOIN product m ON m.id = ?
+              JOIN product m ON m.id = :product
             WHERE p.name = m.name
           )
         ` : ''}
-      `, [product])
+      `, { product })
     });
     t.field('order', {
       type: 'Order',
@@ -105,9 +119,9 @@ export const Query = queryType({
         const query = `
           SELECT *
           FROM \`order\` o
-          WHERE o.id = ?
+          WHERE o.id = :id
         `;
-        const result = await execute<Order>(db, query, [id]);
+        const result = await execute<Order>(db, query, { id });
 
         return result.length ? result[0] : undefined!;
       }

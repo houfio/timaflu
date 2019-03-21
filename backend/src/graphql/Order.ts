@@ -1,6 +1,5 @@
 import { objectType } from 'yoga';
 
-import { NexusGenEnums } from '../../.yoga/nexus';
 import { Contact, Invoice, OrderLine, User } from '../context';
 import { execute } from '../utils/execute';
 
@@ -17,10 +16,10 @@ export const Order = objectType({
           WHERE u.id = (
             SELECT b.user_id
             FROM user_billing b
-            WHERE b.id = ?
+            WHERE b.id = :billing_id
           )
         `;
-        const result = await execute<User>(db, query, [billing_id]);
+        const result = await execute<User>(db, query, { billing_id });
 
         return result[0];
       }
@@ -34,10 +33,10 @@ export const Order = objectType({
           WHERE c.id = (
             SELECT b.contact_id
             FROM user_billing b
-            WHERE b.id = ?
+            WHERE b.id = :billing_id
           )
         `;
-        const result = await execute<Contact>(db, query, [billing_id]);
+        const result = await execute<Contact>(db, query, { billing_id });
 
         return result[0];
       }
@@ -50,16 +49,16 @@ export const Order = objectType({
       resolve: ({ id }, args, { db }) => execute<OrderLine>(db, `
         SELECT *
         FROM order_line l
-        WHERE l.order_id = ?
-      `, [id])
+        WHERE l.order_id = :id
+      `, { id })
     });
     t.list.field('invoices', {
       type: 'Invoice',
       resolve: ({ id }, args, { db }) => execute<Invoice>(db, `
         SELECT *
         FROM invoice i
-        WHERE i.order_id = ?
-      `, [id])
+        WHERE i.order_id = :id
+      `, { id })
     });
     t.float('total', {
       resolve: async ({ id }, args, { db }) => {
@@ -70,10 +69,10 @@ export const Order = objectType({
             JOIN order_line l ON o.id = l.order_id
             JOIN invoice i ON o.id = i.order_id
           GROUP BY o.id
-          HAVING o.id = ?
+          HAVING o.id = :id
           LIMIT 1;
         `;
-        const result = await execute<{ total: number }>(db, query, [id]);
+        const result = await execute<{ total: number }>(db, query, { id });
 
         return result[0].total;
       }
@@ -85,9 +84,9 @@ export const Order = objectType({
           SELECT min(i.state) state
           FROM invoice i
           GROUP BY i.order_id
-          HAVING i.order_id = ?
+          HAVING i.order_id = :id
         `;
-        const result = await execute<{ state: number }>(db, query, [id]);
+        const result = await execute<{ state: number }>(db, query, { id });
 
         return result[0].state as any;
       }

@@ -13,9 +13,9 @@ export const OrderLine = objectType({
         const query = `
           SELECT *
           FROM product p
-          WHERE p.id = ?
+          WHERE p.id = :product_id
         `;
-        const result = await execute<Product>(db, query, [product_id]);
+        const result = await execute<Product>(db, query, { product_id });
 
         return result[0];
       }
@@ -26,9 +26,9 @@ export const OrderLine = objectType({
         const query = `
           SELECT *
           FROM \`order\` o
-          WHERE o.id = ?
+          WHERE o.id = :order_id
         `;
-        const result = await execute<Order>(db, query, [order_id]);
+        const result = await execute<Order>(db, query, { order_id });
 
         return result[0];
       }

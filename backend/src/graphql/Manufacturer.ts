@@ -13,9 +13,9 @@ export const Manufacturer = objectType({
         const query = `
           SELECT *
           FROM contact c
-          WHERE c.id = ?
+          WHERE c.id = :contact_id
         `;
-        const result = await execute<Contact>(db, query, [contact_id]);
+        const result = await execute<Contact>(db, query, { contact_id });
 
         return result[0];
       }
@@ -25,8 +25,8 @@ export const Manufacturer = objectType({
       resolve: ({ id }, args, { db }) => execute<Product>(db, `
         SELECT *
         FROM product p
-        WHERE p.manufacturer_id = ?
-      `, [id])
+        WHERE p.manufacturer_id = :id
+      `, { id })
     });
   }
 });

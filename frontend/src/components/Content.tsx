@@ -8,17 +8,19 @@ import { Heading } from './Heading';
 
 type Props = {
   children?: ReactNode,
-  title: string
+  title?: string
 };
 
 export function Content({ children, title }: Props) {
   return (
     <StyledContent>
-      <StyledHeader>
-        <Heading type="h1">
-          {title}
-        </Heading>
-      </StyledHeader>
+      {title && (
+        <StyledHeader>
+          <Heading type="h1">
+            {title}
+          </Heading>
+        </StyledHeader>
+      )}
       <StyledInner>
         {children}
       </StyledInner>

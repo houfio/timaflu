@@ -104,7 +104,7 @@ type Query {
   product(id: ID!): Product
   products: [Product!]!
   user(id: ID!): User
-  users(role: UserRole): [User!]!
+  users(limit: Int, role: UserRole, search: String): [User!]!
 }
 
 type Robot {

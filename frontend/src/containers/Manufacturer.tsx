@@ -15,22 +15,18 @@ type Params = {
   id: string
 };
 
+type Products = Identifiable & {
+  name: string,
+  price: number,
+  description_short: string
+};
+
 type Manufacturer = Identifiable & {
   id: number,
   contact: {
     company: string
   },
-  products: Array<Identifiable & {
-    name: string,
-    price: number,
-    description_short: string
-  }>
-};
-
-type Products = Identifiable & {
-  name: string,
-  price: number,
-  description_short: string
+  products: Products[]
 };
 
 export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<Params>) {

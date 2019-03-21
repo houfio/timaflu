@@ -62,6 +62,7 @@ type Order {
   id: ID!
   invoices: [Invoice!]!
   lines: [OrderLine!]!
+  state: InvoiceState!
   total: Float!
   user: User!
 }

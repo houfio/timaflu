@@ -1,14 +1,12 @@
 import { Connection, createConnection } from 'mysql';
 
-import { NexusGenEnums } from '../.yoga/nexus';
-
 export type Context = {
   db: Connection
 };
 
 export type User = {
   id: number,
-  role: NexusGenEnums['UserRole']
+  role: number,
   contact_id: number
 };
 
@@ -83,7 +81,7 @@ export type InvoiceLine = {
 export type Invoice = {
   id: number,
   order_id: number,
-  state: NexusGenEnums['InvoiceState'],
+  state: number,
   tax: number,
   description?: string,
   date: string

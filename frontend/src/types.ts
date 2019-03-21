@@ -12,3 +12,5 @@ export type Identifiable = {
 };
 
 export type HeadingType = 'h1' | 'h2' | 'h3';
+
+export type InvoiceState = 'PENDING' | 'COLLECTING' | 'COLLECTED' | 'PACKAGED' | 'SENT' | 'PAID';

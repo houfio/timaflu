@@ -1,5 +1,6 @@
 import { objectType } from 'yoga';
 
+import { NexusGenEnums } from '../../.yoga/nexus';
 import { Contact, Invoice, OrderLine, User } from '../context';
 import { execute } from '../utils/execute';
 
@@ -75,6 +76,20 @@ export const Order = objectType({
         const result = await execute<{ total: number }>(db, query, [id]);
 
         return result[0].total;
+      }
+    });
+    t.field('state', {
+      type: 'InvoiceState',
+      resolve: async ({ id }, args, { db }) => {
+        const query = `
+          SELECT min(i.state) state
+          FROM invoice i
+          GROUP BY i.order_id
+          HAVING i.order_id = ?
+        `;
+        const result = await execute<{ state: number }>(db, query, [id]);
+
+        return result[0].state as any;
       }
     });
   }

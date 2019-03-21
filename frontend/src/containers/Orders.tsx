@@ -1,4 +1,4 @@
-import { faMinus } from '@fortawesome/free-solid-svg-icons';
+import styled from '@emotion/styled/macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import React from 'react';
@@ -6,7 +6,8 @@ import { useQuery } from 'react-apollo-hooks';
 
 import { Content } from '../components/Content';
 import { Table } from '../components/Table';
-import { Identifiable } from '../types';
+import { INVOICE_STATES } from '../constants';
+import { Identifiable, InvoiceState } from '../types';
 
 import { Loading } from './Loading';
 
@@ -17,7 +18,8 @@ type Order = Identifiable & {
     last_name: string
   },
   description?: string,
-  total: number
+  total: number,
+  state: InvoiceState
 };
 
 export function Orders() {
@@ -33,6 +35,7 @@ export function Orders() {
         }
         description
         total
+        state
       }
     }
   `);
@@ -43,6 +46,19 @@ export function Orders() {
         <Table<Order>
           rows={data.orders}
           columns={{
+            state: {
+              heading: 'Status',
+              render: (value) => {
+                const { name, color, icon } = INVOICE_STATES[value];
+
+                return (
+                  <>
+                    <StyledState icon={icon} color={color} fixedWidth={true}/>
+                    {name}
+                  </>
+                );
+              }
+            },
             contact: {
               heading: 'Klant',
               render: (value) => `${value.first_name} ${value.last_name}`
@@ -63,3 +79,7 @@ export function Orders() {
     </Content>
   );
 }
+
+const StyledState = styled(FontAwesomeIcon)`
+  margin-right: .5rem;
+`;

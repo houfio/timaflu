@@ -1,5 +1,5 @@
 import styled from '@emotion/styled/macro';
-import React, { HTMLAttributes } from 'react';
+import React, { HTMLProps } from 'react';
 
 import { Breakpoints } from '../types';
 import { forBreakpoints } from '../utils/forBreakpoints';
@@ -8,7 +8,7 @@ type Props = {
   breakpoints: Breakpoints<number>
 };
 
-export function Column(props: Props & HTMLAttributes<HTMLDivElement>) {
+export function Column(props: Props & HTMLProps<HTMLDivElement>) {
   return (
     <StyledColumn {...props}/>
   );

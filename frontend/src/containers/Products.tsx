@@ -1,17 +1,11 @@
 import styled from '@emotion/styled/macro';
-import {
-  faAngleDoubleDown,
-  faAngleDoubleUp,
-  faAngleDown,
-  faAngleUp,
-  faCheck, faMinus,
-  faTimes
-} from '@fortawesome/free-solid-svg-icons';
+import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
 
+import { Button } from '../components/Button';
 import { Content } from '../components/Content';
 import { Table } from '../components/Table';
 import { useRouter } from '../hooks/useRouter';
@@ -55,51 +49,63 @@ export function Products() {
   return (
     <Content title="Producten">
       {!loading && data ? (
-        <Table<Product>
-          rows={data.products}
-          columns={{
-            stock: {
-              heading: 'Voorraad',
-              render: (value, { min_stock }) => min_stock ? (
-                <>
-                  <StyledStock
-                    icon={value < min_stock / 2
-                      ? faAngleDoubleDown
-                      : value < min_stock
-                        ? faAngleDown
-                        : value > min_stock * 2
-                          ? faAngleDoubleUp
-                          : faAngleUp}
-                    color={value < min_stock
-                      ? 'red'
-                      : value > min_stock
-                        ? 'green'
-                        : 'orange'}
-                    fixedWidth={true}
-                  />
-                  {value}/{min_stock}
-                </>
-              ) : undefined
-            },
-            name: {
-              heading: 'Naam'
-            },
-            code: {
-              heading: 'Code'
-            },
-            manufacturer: {
-              heading: 'Fabrikant',
-              render: (value) => value.contact.company
-            }
-          }}
-          onClick={({ id }) => history.push(`/products/${id}`)}
-        />
+        <>
+          <StyledHeader>
+            <Button>
+              Product inkopen
+            </Button>
+          </StyledHeader>
+          <Table<Product>
+            rows={data.products}
+            columns={{
+              stock: {
+                heading: 'Voorraad',
+                render: (value, { min_stock }) => min_stock ? (
+                  <>
+                    <StyledStock
+                      icon={value < min_stock / 2
+                        ? faAngleDoubleDown
+                        : value < min_stock
+                          ? faAngleDown
+                          : value > min_stock * 2
+                            ? faAngleDoubleUp
+                            : faAngleUp}
+                      color={value < min_stock
+                        ? 'red'
+                        : value > min_stock
+                          ? 'green'
+                          : 'orange'}
+                      fixedWidth={true}
+                    />
+                    {value}/{min_stock}
+                  </>
+                ) : undefined
+              },
+              name: {
+                heading: 'Naam'
+              },
+              code: {
+                heading: 'Code'
+              },
+              manufacturer: {
+                heading: 'Fabrikant',
+                render: (value) => value.contact.company
+              }
+            }}
+            onClick={({ id }) => history.push(`/products/${id}`)}
+          />
+        </>
       ) : (
         <Loading/>
       )}
     </Content>
   );
 }
+
+const StyledHeader = styled.div`
+  display: flex;
+  margin-bottom: 1rem;
+`;
 
 const StyledStock = styled(FontAwesomeIcon)`
   margin-right: .5rem;

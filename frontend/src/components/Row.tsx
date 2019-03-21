@@ -1,7 +1,7 @@
 import styled from '@emotion/styled/macro';
-import React, { HTMLAttributes } from 'react';
+import React, { HTMLProps } from 'react';
 
-export function Row(props: HTMLAttributes<HTMLDivElement>) {
+export function Row(props: HTMLProps<HTMLDivElement>) {
   return (
     <StyledRow {...props}/>
   );

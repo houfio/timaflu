@@ -1,7 +1,7 @@
 import { gql } from 'apollo-boost';
 import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
-import { RouteComponentProps } from 'react-router';
+import { Redirect, RouteComponentProps } from 'react-router';
 
 import { Content } from '../components/Content';
 import { Heading } from '../components/Heading';
@@ -35,12 +35,14 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
 
   return (
     <Content title="Product">
-      {!loading && data ? (
+      {!loading && data ? data.product ? (
         <>
           <Heading type="h1">
             {data.product.name}
           </Heading>
         </>
+      ) : (
+        <Redirect to="/products"/>
       ) : (
         <Loading/>
       )}

@@ -6,6 +6,7 @@ import { Sidebar } from '../components/Sidebar';
 
 import { Customers } from './Customers';
 import { Dashboard } from './Dashboard';
+import { Manufacturer } from './Manufacturer';
 import { Manufacturers } from './Manufacturers';
 import { Orders } from './Orders';
 import { Product } from './Product';
@@ -45,6 +46,7 @@ export function Root() {
           <Route path="/products" exact={true} component={Products}/>
           <Route path="/products/:id" exact={true} component={Product}/>
           <Route path="/manufacturers" exact={true} component={Manufacturers}/>
+          <Route path="/manufacturers/:id" exact={true} component={Manufacturer}/>
         </Switch>
       </BrowserRouter>
     </>

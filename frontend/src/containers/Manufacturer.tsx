@@ -50,10 +50,10 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
       }
     }
   `, {
-      variables: {
-        id
-      }
-    });
+    variables: {
+      id
+    }
+  });
 
   return (
     <Content title="Fabrikant">
@@ -79,14 +79,14 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
                 heading: 'Beschrijving'
               }]
             }}
-            onClick={({ id }) => history.push(`/products/${id}`)}
+            onClick={({ id: productId }) => history.push(`/products/${productId}`)}
           />
         </>
       ) : (
-          <Redirect to="/manufacturers" />
-        ) : (
-          <Loading />
-        )}
+        <Redirect to="/manufacturers"/>
+      ) : (
+        <Loading/>
+      )}
     </Content>
   );
 }

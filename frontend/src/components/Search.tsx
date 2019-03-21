@@ -53,6 +53,7 @@ export function Search<T extends Identifiable>({ onSearch, onSubmit, results, re
                     key={value.id}
                     onClick={() => setSelected(value)}
                     active={selected && value.id === selected.id}
+                    type="button"
                   >
                     {truncate(renderLine(value), 20)}
                   </StyledResult>
@@ -97,15 +98,15 @@ const StyledResults = styled.div`
   margin-top: 1rem;
   background-color: white;
   border-radius: .5rem;
-  overflow: hidden;
   height: 15.625rem;
 `;
 
-const StyledResult = styled.span<{ active?: boolean }>`
+const StyledResult = styled.button<{ active?: boolean }>`
   position: relative;
   padding: 1rem;
   transition: background-color .25s ease;
   background-color: ${(props) => props.active ? 'rgba(0, 0, 0, .1)' : 'white'};
+  text-align: start;
   :not(:first-child)::after {
     content: "";
     position: absolute;
@@ -115,6 +116,14 @@ const StyledResult = styled.span<{ active?: boolean }>`
     top: -1px;
     left: 1rem;
     background-color: rgba(0, 0, 0, .1);
+  }
+  :first-child {
+    border-top-left-radius: .5rem;
+    border-top-right-radius: .5rem;
+  }
+  :last-child {
+    border-bottom-left-radius: .5rem;
+    border-bottom-right-radius: .5rem;
   }
   :hover {
     cursor: pointer;

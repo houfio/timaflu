@@ -7,7 +7,6 @@ import { Content } from '../components/Content';
 import { Heading } from '../components/Heading';
 import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
-import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
 
 import { Products } from './Products';
@@ -21,44 +20,42 @@ type Manufacturer = Identifiable & {
   contact: {
     company: string
   },
-  products: [{
+  products: Array<Identifiable & {
     name: string,
     price: number,
     description_short: string
-  }]
+  }>
 };
 
 type Products = Identifiable & {
   name: string,
   price: number,
   description_short: string
-}
+};
 
 export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<Params>) {
-  const { history } = useRouter();
   const { loading, data } = useQuery<{
     manufacturer: Manufacturer
   }>(gql`
-      query Manufacturer($id: ID!) {
-        manufacturer(id: $id) {
-          id
-
+    query Manufacturer($id: ID!) {
+      manufacturer(id: $id) {
+        id
         contact {
           company
         }
-
         products {
+          id
           name
           price
           description_short
         }
       }
     }
-    `, {
-      variables: {
-        id
-      }
-    });
+  `, {
+    variables: {
+      id
+    }
+  });
 
   return (
     <Content title="Fabrikant">
@@ -67,11 +64,9 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
           <Heading type="h1">
             {data.manufacturer.contact.company}
           </Heading>
-
           <Heading type="h2">
             Producten
           </Heading>
-
           <Table<Products>
             rows={data.manufacturer.products}
             columns={{
@@ -80,20 +75,19 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
               }],
               price: [{
                 heading: 'Prijs',
-                render: (value) => `€ ${value}`
+                render: (value) => `€${value}`
               }],
               description_short: [{
                 heading: 'Beschrijving'
               }]
             }}
           />
-
         </>
       ) : (
-          <Redirect to="/manufacturers" />
-        ) : (
-          <Loading />
-        )}
+        <Redirect to="/manufacturers"/>
+      ) : (
+        <Loading/>
+      )}
     </Content>
   );
 }

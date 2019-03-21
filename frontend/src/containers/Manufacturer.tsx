@@ -5,11 +5,11 @@ import { Redirect, RouteComponentProps } from 'react-router';
 
 import { Content } from '../components/Content';
 import { Heading } from '../components/Heading';
+import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
 
-import { Loading } from './Loading';
 import { Products } from './Products';
 
 type Params = {

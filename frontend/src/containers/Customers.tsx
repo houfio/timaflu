@@ -75,7 +75,7 @@ export function Customers() {
               render: (value) => value.telephone
             }]
           }}
-          onClick={({ id }) => history.push(`/customer/${id}`)}
+          onClick={({ id }) => history.push(`/customers/${id}`)}
         />
       ) : (
         <Loading/>

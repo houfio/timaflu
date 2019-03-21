@@ -97,7 +97,7 @@ type Product {
 
 type Query {
   manufacturer(id: ID!): Manufacturer
-  manufacturers: [Manufacturer!]!
+  manufacturers(product: ID): [Manufacturer!]!
   order(id: ID!): Order
   orders: [Order!]!
   product(id: ID!): Product

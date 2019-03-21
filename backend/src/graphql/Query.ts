@@ -2,7 +2,6 @@ import { arg, idArg, intArg, queryType } from 'yoga';
 
 import { Manufacturer, Order, Product, User } from '../context';
 import { execute } from '../utils/execute';
-import { Robot } from './Robot';
 
 export const Query = queryType({
   definition: (t) => {
@@ -80,10 +79,21 @@ export const Query = queryType({
     });
     t.list.field('manufacturers', {
       type: 'Manufacturer',
-      resolve: (root, args, { db }) => execute<Manufacturer>(db, `
+      args: {
+        product: idArg({ nullable: true })
+      },
+      resolve: (root, { product }, { db }) => execute<Manufacturer>(db, `
         SELECT *
-        FROM manufacturer
-      `)
+        FROM manufacturer m
+        ${product ? `
+          WHERE m.id IN (
+            SELECT p.manufacturer_id
+            FROM product p
+              JOIN product m ON m.id = ?
+            WHERE p.name = m.name
+          )
+        ` : ''}
+      `, [product])
     });
     t.field('order', {
       type: 'Order',

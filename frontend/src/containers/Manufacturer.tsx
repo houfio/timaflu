@@ -7,6 +7,7 @@ import { Content } from '../components/Content';
 import { Heading } from '../components/Heading';
 import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
+import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
 
 import { Products } from './Products';
@@ -30,6 +31,7 @@ type Manufacturer = Identifiable & {
 };
 
 export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<Params>) {
+  const { history } = useRouter();
   const { loading, data } = useQuery<{
     manufacturer: Manufacturer
   }>(gql`
@@ -48,10 +50,10 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
       }
     }
   `, {
-    variables: {
-      id
-    }
-  });
+      variables: {
+        id
+      }
+    });
 
   return (
     <Content title="Fabrikant">
@@ -77,13 +79,14 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
                 heading: 'Beschrijving'
               }]
             }}
+            onClick={({ id }) => history.push(`/products/${id}`)}
           />
         </>
       ) : (
-        <Redirect to="/manufacturers"/>
-      ) : (
-        <Loading/>
-      )}
+          <Redirect to="/manufacturers" />
+        ) : (
+          <Loading />
+        )}
     </Content>
   );
 }

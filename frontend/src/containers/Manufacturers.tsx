@@ -2,8 +2,8 @@ import React from 'react';
 
 import { Content } from '../components/Content';
 
-export function Invoices() {
+export function Manufacturers() {
   return (
-    <Content title="Facturen"/>
+    <Content title="Fabrikanten"/>
   );
 }

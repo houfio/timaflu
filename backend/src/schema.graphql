@@ -2,6 +2,11 @@
 ### Do not make changes to this file directly
 
 
+type Bin {
+  code: String!
+  id: ID!
+}
+
 type Contact {
   address: String!
   city: String!
@@ -15,9 +20,58 @@ type Contact {
   website: String
 }
 
+type Invoice {
+  date: String!
+  description: String
+  id: ID!
+  lines: [InvoiceLine!]!
+  order: Order!
+  state: InvoiceState!
+  tax: Int!
+}
+
+type InvoiceLine {
+  amount: Int!
+  bin: Bin!
+  id: ID!
+  invoice: Invoice!
+  product: Product!
+  robot: Robot!
+}
+
+enum InvoiceState {
+  COLLECTED
+  COLLECTING
+  PACKAGED
+  PAID
+  PENDING
+  SENT
+}
+
 type Manufacturer {
   contact: Contact!
   id: ID!
+  products: [Product!]!
+}
+
+type Order {
+  contact: Contact!
+  date: String!
+  description: String
+  discount: Int!
+  id: ID!
+  invoices: [Invoice!]!
+  lines: [OrderLine!]!
+  user: User!
+}
+
+type OrderLine {
+  amount: Int!
+  description: String!
+  id: ID!
+  order: Order!
+  product: Product!
+  total: Int!
 }
 
 type Product {
@@ -37,10 +91,39 @@ type Product {
   price: Float!
   sold_since: String
   stock: Int
+  substances: [Substance!]!
 }
 
 type Query {
-  manufacturers(productId: ID!): [Manufacturer!]!
+  manufacturer(id: ID!): Manufacturer
+  manufacturers: [Manufacturer!]!
+  order(id: ID!): Order
+  orders: [Order!]!
   product(id: ID!): Product
   products: [Product!]!
+  user(id: ID!): User
+  users(role: UserRole): [User!]!
+}
+
+type Robot {
+  code: String!
+  id: ID!
+}
+
+type Substance {
+  id: ID!
+  name: String!
+}
+
+type User {
+  billing: [Contact!]!
+  contact: Contact!
+  id: ID!
+  orders: [Order!]!
+  role: UserRole!
+}
+
+enum UserRole {
+  CUSTOMER
+  EMPLOYEE
 }

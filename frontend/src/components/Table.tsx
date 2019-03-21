@@ -9,7 +9,7 @@ type Props<T> = {
   columns: {
     [K in keyof T]?: {
       heading: string,
-      render?: (value: T[K]) => ReactNode
+      render?: (value: T[K], row: T) => ReactNode
     }
   },
   onClick?: (row: T) => void
@@ -42,7 +42,7 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
 
                 return (
                   <StyledData key={key as string} heading={column.heading}>
-                    {column.render ? column.render(row[key]) : row[key]}
+                    {column.render ? column.render(row[key], row) : row[key]}
                   </StyledData>
                 );
               })}
@@ -61,7 +61,6 @@ const StyledWrapper = styled.div`
 `;
 
 const StyledTable = styled.table`
-  table-layout: fixed;
   border-collapse: collapse;
   width: 100%;
   overflow: hidden;

@@ -1,11 +1,25 @@
 import { objectType } from 'yoga';
 
+import { Manufacturer } from '../context';
 import { execute } from '../utils/execute';
 
 export const Product = objectType({
   name: 'Product',
   definition: (t) => {
     t.id('id');
+    t.field('manufacturer', {
+      type: 'Manufacturer',
+      resolve: async ({ manufacturer_id }, args, { db }) => {
+        const query = `
+          SELECT *
+          FROM manufacturer m
+          WHERE m.id = ?
+        `;
+        const result = await execute<Manufacturer>(db, query, [manufacturer_id]);
+
+        return result[0];
+      }
+    });
     t.string('name');
     t.string('code');
     t.float('price');
@@ -20,14 +34,17 @@ export const Product = objectType({
     t.string('packaging_size', { nullable: true });
     t.string('min_order', { nullable: true });
     t.string('sold_since', { nullable: true });
-    t.field('manufacturer', {
-      type: 'Manufacturer',
-      resolve: async ({ id }, args, { db }) => {
-        const query = `SELECT * FROM manufacturer WHERE id = (SELECT manufacturer_id FROM product WHERE id = ?)`;
-        const result = await execute(db, query, [id]);
-
-        return result[0];
-      }
+    t.list.field('substances', {
+      type: 'Substance',
+      resolve: ({ id }, args, { db }) => execute(db, `
+        SELECT *
+        FROM substance s
+        WHERE s.id IN (
+          SELECT p.substance_id
+          FROM product_substance p
+          WHERE p.product_id = ?
+        )
+      `, [id])
     });
   }
 });

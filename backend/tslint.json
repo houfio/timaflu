@@ -2,6 +2,11 @@
   "extends": [
     "../tslint.json"
   ],
+  "linterOptions": {
+    "exclude": [
+      ".yoga/**/*.ts"
+    ]
+  },
   "rules":  {
     "no-console": false
   }

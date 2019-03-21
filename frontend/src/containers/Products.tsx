@@ -1,3 +1,13 @@
+import styled from '@emotion/styled/macro';
+import {
+  faAngleDoubleDown,
+  faAngleDoubleUp,
+  faAngleDown,
+  faAngleUp,
+  faCheck, faMinus,
+  faTimes
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
@@ -11,7 +21,14 @@ import { Loading } from './Loading';
 
 type Product = Identifiable & {
   name: string,
-  code: string
+  code: string,
+  stock: number,
+  min_stock: number,
+  manufacturer: {
+    contact: {
+      company: string
+    }
+  }
 };
 
 export function Products() {
@@ -24,6 +41,13 @@ export function Products() {
         id
         name
         code
+        stock
+        min_stock
+        manufacturer {
+          contact {
+            company
+          }
+        }
       }
     }
   `);
@@ -34,14 +58,40 @@ export function Products() {
         <Table<Product>
           rows={data.products}
           columns={{
-            id: {
-              heading: 'ID'
+            stock: {
+              heading: 'Voorraad',
+              render: (value, { min_stock }) => min_stock ? (
+                <>
+                  <StyledStock
+                    icon={value < min_stock / 2
+                      ? faAngleDoubleDown
+                      : value < min_stock
+                        ? faAngleDown
+                        : value > min_stock * 2
+                          ? faAngleDoubleUp
+                          : faAngleUp}
+                    color={value < min_stock
+                      ? 'red'
+                      : value > min_stock
+                        ? 'green'
+                        : 'orange'}
+                    fixedWidth={true}
+                  />
+                  {value}/{min_stock}
+                </>
+              ) : (
+                <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
+              )
             },
             name: {
               heading: 'Naam'
             },
             code: {
               heading: 'Code'
+            },
+            manufacturer: {
+              heading: 'Fabrikant',
+              render: (value) => value.contact.company
             }
           }}
           onClick={({ id }) => history.push(`/products/${id}`)}
@@ -52,3 +102,7 @@ export function Products() {
     </Content>
   );
 }
+
+const StyledStock = styled(FontAwesomeIcon)`
+  margin-right: .5rem;
+`;

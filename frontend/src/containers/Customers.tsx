@@ -5,6 +5,7 @@ import { useQuery } from 'react-apollo-hooks';
 import { Content } from '../components/Content';
 import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
+import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
 
 type Customers = Identifiable & {
@@ -19,6 +20,7 @@ type Customers = Identifiable & {
 };
 
 export function Customers() {
+  const { history } = useRouter();
   const { loading, data } = useQuery<{
     users: Customers[]
   }>(gql`
@@ -50,6 +52,7 @@ export function Customers() {
               render: (value) => `${value.first_name} ${value.last_name}`
             }]
           }}
+          onClick={({ id }) => history.push(`/customer/${id}`)}
         />
       ) : (
         <Loading/>

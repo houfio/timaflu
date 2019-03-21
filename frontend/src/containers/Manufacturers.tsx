@@ -5,6 +5,7 @@ import { useQuery } from 'react-apollo-hooks';
 import { Content } from '../components/Content';
 import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
+import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
 
 type Manufacturers = Identifiable & {
@@ -20,6 +21,7 @@ type Manufacturers = Identifiable & {
 };
 
 export function Manufacturers() {
+  const { history } = useRouter();
   const { loading, data } = useQuery<{
     manufacturers: Manufacturers[]
   }>(gql`
@@ -56,6 +58,7 @@ export function Manufacturers() {
               render: (value) => value.length
             }]
           }}
+          onClick={({ id }) => history.push(`/manufacturers/${id}`)}
         />
       ) : (
         <Loading />

@@ -81,6 +81,7 @@ export function Orders() {
                 render: (value) => `€${value.toFixed(2)}`
               }]
             }}
+            onClick={({ id }) => history.push(`/order/${id}`)}
           />
         </>
       ) : (

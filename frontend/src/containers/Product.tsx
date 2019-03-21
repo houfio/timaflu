@@ -1,4 +1,3 @@
-import styled from '@emotion/styled/macro';
 import { gql } from 'apollo-boost';
 import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
@@ -48,13 +47,3 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
     </Content>
   );
 }
-
-const StyledDescription = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const StyledInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 2rem;
-`;

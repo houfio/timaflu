@@ -6,11 +6,12 @@ import { useQuery } from 'react-apollo-hooks';
 
 import { Button } from '../components/Button';
 import { Content } from '../components/Content';
+import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { INVOICE_STATES } from '../constants';
+import { useRouter } from '../hooks/useRouter';
 import { Identifiable, InvoiceState } from '../types';
-
-import { Loading } from './Loading';
+import { truncate } from '../utils/truncate';
 
 type Order = Identifiable & {
   date: string,
@@ -24,6 +25,7 @@ type Order = Identifiable & {
 };
 
 export function Orders() {
+  const { history } = useRouter();
   const { loading, data } = useQuery<{
     orders: Order[]
   }>(gql`
@@ -46,7 +48,7 @@ export function Orders() {
       {!loading && data ? (
         <>
           <StyledHeader>
-            <Button>
+            <Button onClick={() => history.push('/orders/create')}>
               Bestelling aanmaken
             </Button>
           </StyledHeader>
@@ -72,13 +74,14 @@ export function Orders() {
               }],
               description: [{
                 heading: 'Beschrijving',
-                render: (value) => value ? value.length > 20 ? `${value.substr(0, 20)}...` : value : undefined
+                render: (value) => value ? truncate(value, 20) : undefined
               }],
               total: [{
                 heading: 'Prijs',
                 render: (value) => `€${value.toFixed(2)}`
               }]
             }}
+            onClick={({ id }) => history.push(`/order/${id}`)}
           />
         </>
       ) : (

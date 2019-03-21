@@ -7,11 +7,10 @@ import { useQuery } from 'react-apollo-hooks';
 
 import { Button } from '../components/Button';
 import { Content } from '../components/Content';
+import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
-
-import { Loading } from './Loading';
 
 type Product = Identifiable & {
   name: string,

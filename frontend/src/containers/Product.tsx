@@ -5,9 +5,8 @@ import { Redirect, RouteComponentProps } from 'react-router';
 
 import { Content } from '../components/Content';
 import { Heading } from '../components/Heading';
+import { Loading } from '../components/Loading';
 import { Identifiable } from '../types';
-
-import { Loading } from './Loading';
 
 type Params = {
   id: string

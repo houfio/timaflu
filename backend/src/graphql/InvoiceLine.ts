@@ -13,9 +13,9 @@ export const InvoiceLine = objectType({
         const query = `
           SELECT *
           FROM bin b
-          WHERE b.id = ?
+          WHERE b.id = :bin_id
         `;
-        const result = await execute<Bin>(db, query, [bin_id]);
+        const result = await execute<Bin>(db, query, { bin_id });
 
         return result[0];
       }
@@ -26,9 +26,9 @@ export const InvoiceLine = objectType({
         const query = `
           SELECT *
           FROM product p
-          WHERE p.id = ?
+          WHERE p.id = :product_id
         `;
-        const result = await execute<Product>(db, query, [product_id]);
+        const result = await execute<Product>(db, query, { product_id });
 
         return result[0];
       }
@@ -39,9 +39,9 @@ export const InvoiceLine = objectType({
         const query = `
           SELECT *
           FROM invoice i
-          WHERE i.id = ?
+          WHERE i.id = :invoice_id
         `;
-        const result = await execute<Invoice>(db, query, [invoice_id]);
+        const result = await execute<Invoice>(db, query, { invoice_id });
 
         return result[0];
       }
@@ -52,9 +52,9 @@ export const InvoiceLine = objectType({
         const query = `
           SELECT *
           FROM robot r
-          WHERE r.id = ?
+          WHERE r.id = :robot_id
         `;
-        const result = await execute<Robot>(db, query, [robot_id]);
+        const result = await execute<Robot>(db, query, { robot_id });
 
         return result[0];
       }

@@ -31,6 +31,7 @@ export function Manufacturers() {
   }>(gql`
     query Manufacturers {
       manufacturers {
+        id
         contact {
           first_name
           last_name

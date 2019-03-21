@@ -79,9 +79,7 @@ export function Products() {
                   />
                   {value}/{min_stock}
                 </>
-              ) : (
-                <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
-              )
+              ) : undefined
             },
             name: {
               heading: 'Naam'

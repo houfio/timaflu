@@ -3,13 +3,15 @@ import React, { ReactNode } from 'react';
 
 import { Breakpoint, Identifiable } from '../types';
 import { forBreakpoint } from '../utils/forBreakpoint';
+import { faMinus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type Props<T> = {
   rows: T[],
   columns: {
     [K in keyof T]?: {
       heading: string,
-      render?: (value: T[K], row: T) => ReactNode
+      render?: (value: T[K], row: T) => ReactNode | undefined
     }
   },
   onClick?: (row: T) => void
@@ -36,13 +38,21 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
         </StyledHead>
         <tbody>
           {rows.map((row) => (
-            <StyledRow key={row.id} clickable={Boolean(onClick)} onClick={() => onClick && onClick(row)} tabIndex={0}>
+            <StyledRow
+              key={row.id}
+              clickable={Boolean(onClick)}
+              onClick={() => onClick && onClick(row)}
+              tabIndex={onClick ? 0 : undefined}
+            >
               {columnKeys.map((key) => {
                 const column = columns[key]!;
+                const children = column.render ? column.render(row[key], row) : row[key];
 
                 return (
                   <StyledData key={key as string} heading={column.heading}>
-                    {column.render ? column.render(row[key], row) : row[key]}
+                    {children !== undefined ? children : (
+                      <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
+                    )}
                   </StyledData>
                 );
               })}
@@ -89,7 +99,7 @@ const StyledRow = styled.tr<{ clickable: boolean }>`
       height: 2px;
       left: 0;
       bottom: -2px;
-      background-color: #dadada;
+      background-color: rgba(0, 0, 0, .1);
       ${forBreakpoint(Breakpoint.Desktop, `
         display: none;
       `)};

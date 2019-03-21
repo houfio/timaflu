@@ -45,7 +45,7 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
 
                 return (
                   <StyledData key={`${key}-${index}`} heading={column.heading}>
-                    {children !== undefined ? children : (
+                    {children ? children : (
                       <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
                     )}
                   </StyledData>

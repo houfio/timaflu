@@ -16,8 +16,7 @@ import { truncate } from '../utils/truncate';
 type Order = Identifiable & {
   date: string,
   contact: {
-    first_name: string,
-    last_name: string
+    company: string
   },
   description?: string,
   total: number,
@@ -33,8 +32,7 @@ export function Orders() {
       orders {
         id
         contact {
-          first_name
-          last_name
+          company
         }
         description
         total
@@ -70,7 +68,7 @@ export function Orders() {
               }],
               contact: [{
                 heading: 'Klant',
-                render: (value) => `${value.first_name} ${value.last_name}`
+                render: (value) => value.company
               }],
               description: [{
                 heading: 'Beschrijving',

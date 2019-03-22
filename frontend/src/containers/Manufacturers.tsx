@@ -7,6 +7,8 @@ import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
+import { compare } from '../utils/compare';
+import { codeFormat } from '../utils/codeFormat';
 
 type Manufacturers = Identifiable & {
   id: number,
@@ -48,14 +50,17 @@ export function Manufacturers() {
           columns={{
             contact: [{
               heading: 'Naam',
-              render: (value) => value.company
+              render: (value) => value.company,
+              sortable: true
             }, {
               heading: 'Contactpersoon',
-              render: (value) => `${value.first_name} ${value.last_name}`
+              render: (value) => `${value.first_name} ${value.last_name}`,
+              sortable: true
             }],
             products: [{
               heading: 'Aantal producten',
-              render: (value) => value.length
+              render: (value) => value.length,
+              sortable: true
             }]
           }}
           onClick={({ id }) => history.push(`/manufacturers/${id}`)}

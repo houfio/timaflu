@@ -13,7 +13,7 @@ type Props<T> = {
     [K in keyof T]?: Array<{
       heading: string,
       render?: (value: T[K], row: T) => ReactNode | undefined,
-      sort?: (a: T, b: T) => number
+      sortable?: boolean
     }>
   },
   onClick?: (row: T) => void
@@ -54,9 +54,9 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
                 <StyledHeading
                   key={`${key}-${index}`}
                   onClick={() => updateSort(key, index)}
-                  sortable={Boolean(column.sort)}
+                  sortable={Boolean(column.sortable)}
                 >
-                  {column.sort && (
+                  {column.sortable && (
                     <StyledSort icon={current ? reverse ? faSortDown : faSortUp : faSort} enabled={current}/>
                   )} {column.heading}
                 </StyledHeading>
@@ -71,7 +71,16 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
                 return compare(a.id, b.id);
               }
 
-              return columns[sort.key]![sort.index].sort!(a, b) * (sort.reverse ? -1 : 1);
+              const column = columns[sort.key]![sort.index];
+              const resultA = column.render ? column.render(a[sort.key], a) : a[sort.key];
+              const resultB = column.render ? column.render(b[sort.key], b) : b[sort.key];
+
+              if ((typeof resultA !== 'string' && typeof resultA !== 'number')
+                || (typeof resultB !== 'string' && typeof resultB !== 'number')) {
+                throw new Error();
+              }
+
+              return compare(resultA, resultB) * (sort.reverse ? -1 : 1);
             })
             .map((row) => (
             <StyledRow

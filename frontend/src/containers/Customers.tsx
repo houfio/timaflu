@@ -66,10 +66,12 @@ export function Customers() {
             }],
             contact: [{
               heading: 'Naam',
-              render: (value) => value.company
+              render: (value) => value.company,
+              sortable: true
             }, {
               heading: 'Contactpersoon',
-              render: (value) => `${value.first_name} ${value.last_name}`
+              render: (value) => `${value.first_name} ${value.last_name}`,
+              sortable: true
             }, {
               heading: 'Telefoonnummer',
               render: (value) => value.telephone

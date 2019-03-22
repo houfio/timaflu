@@ -70,11 +70,13 @@ export function Orders() {
               }],
               id: [{
                 heading: 'Code',
-                render: codeFormat
+                render: codeFormat,
+                sortable: true
               }],
               contact: [{
                 heading: 'Klant',
-                render: (value) => value.company
+                render: (value) => value.company,
+                sortable: true
               }],
               description: [{
                 heading: 'Beschrijving',
@@ -82,7 +84,8 @@ export function Orders() {
               }],
               total: [{
                 heading: 'Prijs',
-                render: priceFormat
+                render: priceFormat,
+                sortable: true
               }]
             }}
             onClick={({ id }) => history.push(`/orders/${id}`)}

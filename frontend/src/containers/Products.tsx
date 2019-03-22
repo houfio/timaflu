@@ -77,16 +77,16 @@ export function Products() {
               code: [{
                 heading: 'Code',
                 render: codeFormat,
-                sort: (a, b) => compare(a.code, b.code)
+                sortable: true
               }],
               name: [{
                 heading: 'Naam',
-                sort: (a, b) => compare(a.name, b.name)
+                sortable: true
               }],
               manufacturer: [{
                 heading: 'Fabrikant',
                 render: (value) => value.contact.company,
-                sort: (a, b) => compare(a.manufacturer.contact.company, b.manufacturer.contact.company)
+                sortable: true
               }]
             }}
             onClick={({ id }) => history.push(`/products/${id}`)}

@@ -46,5 +46,21 @@ export const Product = objectType({
         )
       `, { id })
     });
+    t.field('state', {
+      type: 'ProductState',
+      resolve: ({ stock, min_stock }) => {
+        if (!stock || !min_stock) {
+          return 'ZERO';
+        } else if (stock < min_stock / 2) {
+          return 'FAR_BELOW_MIN';
+        } else if (stock < min_stock) {
+          return 'BELOW_MIN';
+        } else if (stock >= min_stock * 2) {
+          return 'FAR_ABOVE_MIN';
+        }
+
+        return 'ABOVE_MIN';
+      }
+    });
   }
 });

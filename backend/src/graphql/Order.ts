@@ -79,7 +79,7 @@ export const Order = objectType({
     });
     t.field('state', {
       type: 'InvoiceState',
-      resolve: async ({ id }, args, { db }) => {
+      resolve: async ({ id }, args, { db }): Promise<any> => {
         const query = `
           SELECT min(i.state) state
           FROM invoice i
@@ -88,7 +88,7 @@ export const Order = objectType({
         `;
         const result = await execute<{ state: number }>(db, query, { id });
 
-        return result[0].state as any;
+        return result[0].state;
       }
     });
   }

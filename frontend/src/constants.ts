@@ -1,7 +1,18 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { faBox, faBoxOpen, faCheck, faMinus, faRobot, faTruck } from '@fortawesome/free-solid-svg-icons';
+import {
+  faAngleDoubleDown,
+  faAngleDoubleUp,
+  faAngleDown,
+  faAngleUp,
+  faBox,
+  faBoxOpen,
+  faCheck,
+  faMinus,
+  faRobot,
+  faTruck
+} from '@fortawesome/free-solid-svg-icons';
 
-import { Breakpoint, InvoiceState } from './types';
+import { Breakpoint, InvoiceState, ProductState } from './types';
 
 export const BREAKPOINTS: Record<Breakpoint, number> = {
   [Breakpoint.Phone]: 0,
@@ -40,5 +51,28 @@ export const INVOICE_STATES: Record<InvoiceState, { name: string, color: string,
     name: 'Betaald',
     color: '#24292e',
     icon: faCheck
+  }
+};
+
+export const PRODUCT_STATES: Record<ProductState, { color: string, icon: IconProp }> = {
+  ZERO: {
+    color: 'rgba(0, 0, 0, .1)',
+    icon: faMinus
+  },
+  FAR_BELOW_MIN: {
+    color: 'red',
+    icon: faAngleDoubleDown
+  },
+  BELOW_MIN: {
+    color: 'orange',
+    icon: faAngleDown
+  },
+  ABOVE_MIN: {
+    color: 'green',
+    icon: faAngleUp
+  },
+  FAR_ABOVE_MIN: {
+    color: 'green',
+    icon: faAngleDoubleUp
   }
 };

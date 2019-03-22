@@ -14,3 +14,5 @@ export type Identifiable = {
 export type HeadingType = 'h1' | 'h2' | 'h3';
 
 export type InvoiceState = 'PENDING' | 'COLLECTING' | 'COLLECTED' | 'PACKAGED' | 'SENT' | 'PAID';
+
+export type ProductState = 'ZERO' | 'FAR_BELOW_MIN' | 'BELOW_MIN' | 'ABOVE_MIN' | 'FAR_ABOVE_MIN';

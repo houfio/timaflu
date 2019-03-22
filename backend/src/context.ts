@@ -32,7 +32,7 @@ export type Product = {
   description?: string,
   description_short?: string,
   stock?: number,
-  min_string?: number,
+  min_stock?: number,
   contents?: string,
   location?: string,
   packaging?: number,

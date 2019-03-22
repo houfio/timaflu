@@ -92,8 +92,17 @@ type Product {
   packaging_size: String
   price: Float!
   sold_since: String
+  state: ProductState!
   stock: Int
   substances: [Substance!]!
+}
+
+enum ProductState {
+  ABOVE_MIN
+  BELOW_MIN
+  FAR_ABOVE_MIN
+  FAR_BELOW_MIN
+  ZERO
 }
 
 type Query {

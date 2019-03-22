@@ -1,5 +1,4 @@
 import styled from '@emotion/styled/macro';
-import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import React from 'react';
@@ -9,8 +8,9 @@ import { Button } from '../components/Button';
 import { Content } from '../components/Content';
 import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
+import { PRODUCT_STATES } from '../constants';
 import { useRouter } from '../hooks/useRouter';
-import { Identifiable } from '../types';
+import { Identifiable, ProductState } from '../types';
 
 type Product = Identifiable & {
   name: string,
@@ -22,6 +22,7 @@ type Product = Identifiable & {
       company: string
     }
   }
+  state: ProductState
 };
 
 export function Products() {
@@ -41,6 +42,7 @@ export function Products() {
             company
           }
         }
+        state
       }
     }
   `);
@@ -57,28 +59,18 @@ export function Products() {
           <Table<Product>
             rows={data.products}
             columns={{
-              stock: [{
+              state: [{
                 heading: 'Voorraad',
-                render: (value, { min_stock }) => min_stock ? (
-                  <>
-                    <StyledStock
-                      icon={value < min_stock / 2
-                        ? faAngleDoubleDown
-                        : value < min_stock
-                          ? faAngleDown
-                          : value > min_stock * 2
-                            ? faAngleDoubleUp
-                            : faAngleUp}
-                      color={value < min_stock
-                        ? 'red'
-                        : value > min_stock
-                          ? 'green'
-                          : 'orange'}
-                      fixedWidth={true}
-                    />
-                    {value}/{min_stock}
-                  </>
-                ) : undefined
+                render: (value, { stock, min_stock }) => {
+                  const { icon, color } = PRODUCT_STATES[value];
+
+                  return min_stock ? (
+                    <>
+                      <StyledStock icon={icon} color={color} fixedWidth={true}/>
+                      {stock}/{min_stock}
+                    </>
+                  ) : undefined;
+                }
               }],
               name: [{
                 heading: 'Naam'

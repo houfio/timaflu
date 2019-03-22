@@ -1,5 +1,6 @@
 import styled from '@emotion/styled/macro';
-import { faCheck, faFolderOpen, faMapMarkerAlt, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faFolderOpen, faMapMarkerAlt, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { useState } from 'react';
@@ -57,353 +58,40 @@ type ProductAmountPair = Identifiable & {
   amount: number
 };
 
+type StepProps = {
+  previousStep: () => void,
+  nextStep: () => void,
+  user?: User,
+  setUser: (user: User) => void,
+  products: ProductAmountPair[],
+  setProducts: (products: ProductAmountPair[]) => void,
+  contact?: Contact,
+  setContact: (contact: Contact) => void,
+  subtotal: number,
+  total: number
+};
+
 export function CreateOrder() {
-  const { history } = useRouter();
   const [step, setStep] = useState(0);
   const [user, setUser] = useState<User>();
   const [products, setProducts] = useState<ProductAmountPair[]>([]);
   const [contact, setContact] = useState<Contact>();
 
-  const previousStep = () => setStep(step - 1);
-  const nextStep = () => setStep(step + 1);
-
   const subtotal = products.reduce((previous, current) => previous + current.product.price * current.amount, 0);
   const total = user ? subtotal * (1 - user.discount / 100) * (1 - (subtotal >= 500 ? .05 : 0)) : subtotal;
 
-  function ContactDetails({ contact: { address, postal_code, city, country, telephone } }: { contact: Contact }) {
-    return (
-      <>
-        <span>{address}</span>
-        <span>{postal_code} {city}</span>
-        <span>{country}</span>
-        <span>{telephone}</span>
-      </>
-    );
-  }
-
-  function StepOne() {
-    const [search, setSearch] = useState('');
-    const debouncedSearch = useDebounce(search, 250);
-    const { loading, data } = useQuery<{
-      users: User[]
-    }>(gql`
-      query CreateOrderUsers($search: String!) {
-        users(search: $search, limit: 5, role: CUSTOMER) {
-          id
-          discount
-          contact {
-            id
-            company
-            first_name
-            last_name
-            address
-            postal_code
-            city
-            country
-            telephone
-          }
-        }
-      }
-    `, {
-      variables: {
-        search: debouncedSearch
-      }
-    });
-
-    return (
-      <>
-        <StyledHeading type="h2">
-          Selecteer klant
-        </StyledHeading>
-        <Search<User>
-          onSearch={setSearch}
-          value={user}
-          onChange={setUser}
-          options={!loading ? data && data.users : undefined}
-          renderLine={(value) => `${value.contact.first_name} ${value.contact.last_name}`}
-          render={(value) => (
-            <>
-              <Heading type="h2">
-                {value.contact.company}
-              </Heading>
-              <Heading type="h3">
-                {value.contact.first_name} {value.contact.last_name}
-              </Heading>
-              <StyledDetails>
-                <ContactDetails contact={value.contact}/>
-              </StyledDetails>
-            </>
-          )}
-        />
-        <StyledFooter right={true}>
-          <Button onClick={nextStep} disabled={!user}>
-            Volgende
-          </Button>
-        </StyledFooter>
-      </>
-    );
-  }
-
-  function StepTwo() {
-    type Values = {
-      amount: string
-    };
-
-    const [product, setProduct] = useState<Product>();
-    const [search, setSearch] = useState('');
-    const debouncedSearch = useDebounce(search, 250);
-    const { loading, data } = useQuery<{
-      products: Product[]
-    }>(gql`
-      query CreateOrderProducts($search: String!) {
-        products(search: $search, limit: 5, sold: true) {
-          id
-          name
-          code
-          price
-          stock
-          contents
-          packaging_amount
-          manufacturer {
-            contact {
-              company
-            }
-          }
-        }
-      }
-    `, {
-      variables: {
-        search: debouncedSearch
-      }
-    });
-    const formik = useFormik<Values>({
-      initialValues: {
-        amount: '1'
-      },
-      onSubmit: ({ amount }, { resetForm }) => {
-        if (!product) {
-          return;
-        }
-
-        const current = products.find((p) => p.product.id === product.id);
-
-        setProducts([
-          ...products.filter((p) => p.product.id !== product.id),
-          {
-            id: product.id,
-            product,
-            amount: Number(amount) + (current ? current.amount : 0)
-          }
-        ]);
-
-        resetForm();
-        setProduct(undefined);
-      }
-    });
-
-    return (
-      <>
-        <StyledHeading type="h2">
-          Selecteer producten
-        </StyledHeading>
-        <Search<Product>
-          onSearch={setSearch}
-          value={product}
-          onChange={setProduct}
-          options={!loading ? data && data.products : undefined}
-          renderLine={(value) => value.name}
-          render={(value) => (
-            <FormikProvider value={formik}>
-              <Heading type="h2">
-                {value.name}
-              </Heading>
-              <Heading type="h3">
-                {codeFormat(value.code)}
-              </Heading>
-              <StyledDetails>
-                <span>Fabrikant: {value.manufacturer.contact.company}</span>
-                <span>Inhoud: {value.packaging_amount}x {value.contents}</span>
-                <span>Prijs: {priceFormat(value.price)}</span>
-              </StyledDetails>
-              <Form>
-                <StyledInput name="amount" type="number" min="1" max={value.stock}/>
-                <Button type="submit">
-                  Toevoegen
-                </Button>
-              </Form>
-            </FormikProvider>
-          )}
-        />
-        <StyledFooter>
-          <Button onClick={previousStep}>
-            Vorige
-          </Button>
-          <Button onClick={nextStep} disabled={!products.length}>
-            Volgende
-          </Button>
-        </StyledFooter>
-        <Table<ProductAmountPair>
-          rows={products}
-          columns={{
-            amount: [{
-              heading: 'Aantal',
-              sortable: true
-            }],
-            product: [{
-              heading: 'Naam',
-              render: (value) => value.name,
-              sortable: true
-            }, {
-              heading: 'Code',
-              render: (value) => codeFormat(value.code),
-              sortable: true
-            }, {
-              heading: 'Prijs',
-              render: (value, row) => priceFormat(value.price * row.amount),
-              sortable: true
-            }]
-          }}
-        />
-        <StyledBottom>
-          Totaalprijs: {priceFormat(total)} ({priceFormat(subtotal)} zonder kortingen)
-        </StyledBottom>
-      </>
-    );
-  }
-
-  function StepThree() {
-    const [search, setSearch] = useState('');
-    const debouncedSearch = useDebounce(search, 250);
-    const { loading, data } = useQuery<{
-      user: User
-    }>(gql`
-      query CreateOrderBilling($id: ID!, $search: String!) {
-        user(id: $id) {
-          billing(search: $search, limit: 5) {
-            id
-            company
-            first_name
-            last_name
-            address
-            postal_code
-            city
-            country
-            telephone
-          }
-        }
-      }
-    `, {
-      variables: {
-        id: user ? user.id : '',
-        search: debouncedSearch
-      }
-    });
-
-    return (
-      <>
-        <StyledHeading type="h2">
-          Selecteer verzendadres
-        </StyledHeading>
-        <Search<Contact>
-          onSearch={setSearch}
-          value={contact}
-          onChange={setContact}
-          options={!loading ? data && data.user.billing : undefined}
-          renderLine={(value) => truncate(value.address, 20)}
-          render={(value) => (
-            <>
-              <Heading type="h2">
-                {value.company}
-              </Heading>
-              <Heading type="h3">
-                {value.first_name} {value.last_name}
-              </Heading>
-              <StyledDetails>
-                <ContactDetails contact={value}/>
-              </StyledDetails>
-            </>
-          )}
-        />
-        <StyledFooter>
-          <Button onClick={previousStep}>
-            Vorige
-          </Button>
-          <Button onClick={nextStep} disabled={!contact}>
-            Volgende
-          </Button>
-        </StyledFooter>
-      </>
-    );
-  }
-
-  function StepFour() {
-    if (!user || !products.length || !contact) {
-      return null;
-    }
-
-    return (
-      <>
-        <StyledHeading type="h2">
-          Bestelling controleren
-        </StyledHeading>
-        <StyledRow spacing={1}>
-          <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
-            <StyledContact>
-              <Heading type="h2">
-                Factuuradres
-              </Heading>
-              <span>{user.contact.company}</span>
-              <span>{user.contact.first_name} {user.contact.last_name}</span>
-              <ContactDetails contact={user.contact}/>
-            </StyledContact>
-          </Column>
-          <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
-            <StyledContact>
-              <Heading type="h2">
-                Verzendadres
-              </Heading>
-              <span>{contact.company}</span>
-              <span>{contact.first_name} {contact.last_name}</span>
-              <ContactDetails contact={contact}/>
-            </StyledContact>
-          </Column>
-        </StyledRow>
-        <Table<ProductAmountPair>
-          rows={products}
-          columns={{
-            amount: [{
-              heading: 'Aantal',
-              sortable: true
-            }],
-            product: [{
-              heading: 'Naam',
-              render: (value) => value.name,
-              sortable: true
-            }, {
-              heading: 'Code',
-              render: (value) => codeFormat(value.code),
-              sortable: true
-            }, {
-              heading: 'Prijs',
-              render: (value, row) => priceFormat(value.price * row.amount),
-              sortable: true
-            }]
-          }}
-        />
-        <StyledBottom>
-          Totaalprijs: {priceFormat(total)} ({priceFormat(subtotal)} zonder kortingen)
-        </StyledBottom>
-        <StyledFooter>
-          <Button onClick={previousStep}>
-            Vorige
-          </Button>
-          <Button onClick={() => history.push('/orders')}>
-            Afronden
-          </Button>
-        </StyledFooter>
-      </>
-    );
-  }
+  const props: StepProps = {
+    previousStep: () => setStep(step - 1),
+    nextStep: () => setStep(step + 1),
+    user,
+    setUser,
+    products,
+    setProducts,
+    contact,
+    setContact,
+    subtotal,
+    total
+  };
 
   return (
     <Content title="Bestelling aanmaken">
@@ -413,30 +101,369 @@ export function CreateOrder() {
           {
             icon: faUser,
             children: (
-              <StepOne/>
+              <StepOne {...props}/>
             )
           },
           {
             icon: faFolderOpen,
             children: (
-              <StepTwo/>
+              <StepTwo {...props}/>
             )
           },
           {
             icon: faMapMarkerAlt,
             children: (
-              <StepThree/>
+              <StepThree {...props}/>
             )
           },
           {
             icon: faCheck,
             children: (
-              <StepFour/>
+              <StepFour {...props}/>
             )
           }
         ]}
       />
     </Content>
+  );
+}
+
+function StepOne({ nextStep, user, setUser }: StepProps) {
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 250);
+  const { loading, data } = useQuery<{
+    users: User[]
+  }>(gql`
+    query CreateOrderUsers($search: String!) {
+      users(search: $search, limit: 5, role: CUSTOMER) {
+        id
+        discount
+        contact {
+          id
+          company
+          first_name
+          last_name
+          address
+          postal_code
+          city
+          country
+          telephone
+        }
+      }
+    }
+  `, {
+    variables: {
+      search: debouncedSearch
+    }
+  });
+
+  return (
+    <>
+      <StyledHeading type="h2">
+        Selecteer klant
+      </StyledHeading>
+      <Search<User>
+        onSearch={setSearch}
+        value={user}
+        onChange={setUser}
+        options={!loading ? data && data.users : undefined}
+        renderLine={(value) => `${value.contact.first_name} ${value.contact.last_name}`}
+        render={(value) => (
+          <>
+            <Heading type="h2">
+              {value.contact.company}
+            </Heading>
+            <Heading type="h3">
+              {value.contact.first_name} {value.contact.last_name}
+            </Heading>
+            <StyledDetails>
+              <span>{value.contact.address}</span>
+              <span>{value.contact.postal_code} {value.contact.city}</span>
+              <span>{value.contact.country}</span>
+              <span>{value.contact.telephone}</span>
+            </StyledDetails>
+          </>
+        )}
+      />
+      <StyledFooter right={true}>
+        <Button onClick={nextStep} disabled={!user}>
+          Volgende
+        </Button>
+      </StyledFooter>
+    </>
+  );
+}
+
+function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, total }: StepProps) {
+  type Values = {
+    amount: string
+  };
+
+  const [product, setProduct] = useState<Product>();
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 250);
+  const { loading, data } = useQuery<{
+    products: Product[]
+  }>(gql`
+    query CreateOrderProducts($search: String!) {
+      products(search: $search, limit: 5, sold: true) {
+        id
+        name
+        code
+        price
+        stock
+        contents
+        packaging_amount
+        manufacturer {
+          contact {
+            company
+          }
+        }
+      }
+    }
+  `, {
+    variables: {
+      search: debouncedSearch
+    }
+  });
+  const formik = useFormik<Values>({
+    initialValues: {
+      amount: '1'
+    },
+    onSubmit: ({ amount }, { resetForm }) => {
+      if (!product) {
+        return;
+      }
+
+      const current = products.find((p) => p.product.id === product.id);
+
+      setProducts([
+        ...products.filter((p) => p.product.id !== product.id),
+        {
+          id: product.id,
+          product,
+          amount: Number(amount) + (current ? current.amount : 0)
+        }
+      ]);
+
+      resetForm();
+      setProduct(undefined);
+    }
+  });
+
+  return (
+    <>
+      <StyledHeading type="h2">
+        Selecteer producten
+      </StyledHeading>
+      <Search<Product>
+        onSearch={setSearch}
+        value={product}
+        onChange={setProduct}
+        options={!loading ? data && data.products : undefined}
+        renderLine={(value) => value.name}
+        render={(value) => (
+          <FormikProvider value={formik}>
+            <Heading type="h2">
+              {value.name}
+            </Heading>
+            <Heading type="h3">
+              {codeFormat(value.code)}
+            </Heading>
+            <StyledDetails>
+              <span>Fabrikant: {value.manufacturer.contact.company}</span>
+              <span>Inhoud: {value.packaging_amount}x {value.contents}</span>
+              <span>Prijs: {priceFormat(value.price)}</span>
+            </StyledDetails>
+            <Form>
+              <StyledInput name="amount" type="number" min="1" max={value.stock}/>
+              <Button type="submit">
+                Toevoegen
+              </Button>
+            </Form>
+          </FormikProvider>
+        )}
+      />
+      <StyledFooter>
+        <Button onClick={previousStep}>
+          Vorige
+        </Button>
+        <Button onClick={nextStep} disabled={!products.length}>
+          Volgende
+        </Button>
+      </StyledFooter>
+      <Table<ProductAmountPair>
+        rows={products}
+        columns={{
+          amount: [{
+            heading: 'Aantal',
+            sortable: true
+          }],
+          product: [{
+            heading: 'Naam',
+            render: (value) => value.name,
+            sortable: true
+          }, {
+            heading: 'Code',
+            render: (value) => codeFormat(value.code),
+            sortable: true
+          }, {
+            heading: 'Prijs',
+            render: (value, row) => priceFormat(value.price * row.amount),
+            sortable: true
+          }]
+        }}
+      />
+      <StyledBottom>
+        Totaalprijs: {priceFormat(total)} ({priceFormat(subtotal)} zonder kortingen)
+      </StyledBottom>
+    </>
+  );
+}
+
+function StepThree({ previousStep, nextStep, user, contact, setContact }: StepProps) {
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 250);
+  const { loading, data } = useQuery<{
+    user: User
+  }>(gql`
+    query CreateOrderBilling($id: ID!, $search: String!) {
+      user(id: $id) {
+        billing(search: $search, limit: 5) {
+          id
+          company
+          first_name
+          last_name
+          address
+          postal_code
+          city
+          country
+          telephone
+        }
+      }
+    }
+  `, {
+    variables: {
+      id: user ? user.id : '',
+      search: debouncedSearch
+    }
+  });
+
+  return (
+    <>
+      <StyledHeading type="h2">
+        Selecteer verzendadres
+      </StyledHeading>
+      <Search<Contact>
+        onSearch={setSearch}
+        value={contact}
+        onChange={setContact}
+        options={!loading ? data && data.user.billing : undefined}
+        renderLine={(value) => truncate(value.address, 20)}
+        render={(value) => (
+          <>
+            <Heading type="h2">
+              Verzendadres
+            </Heading>
+            <Heading type="h3">
+              {codeFormat(value.id)}
+            </Heading>
+            <StyledDetails>
+              <span>{value.company}</span>
+              <span>{value.first_name} {value.last_name}</span>
+              <span>{value.address}</span>
+              <span>{value.postal_code} {value.city}</span>
+              <span>{value.country}</span>
+            </StyledDetails>
+          </>
+        )}
+      />
+      <StyledFooter>
+        <Button onClick={previousStep}>
+          Vorige
+        </Button>
+        <Button onClick={nextStep} disabled={!contact}>
+          Volgende
+        </Button>
+      </StyledFooter>
+    </>
+  );
+}
+
+function StepFour({ previousStep, user, products, contact, subtotal, total }: StepProps) {
+  const { history } = useRouter();
+
+  if (!user || !products.length || !contact) {
+    return null;
+  }
+
+  return (
+    <>
+      <StyledHeading type="h2">
+        Bestelling controleren
+      </StyledHeading>
+      <StyledRow spacing={1}>
+        <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
+          <StyledContact>
+            <Heading type="h2">
+              Factuuradres
+            </Heading>
+            <span>{user.contact.company}</span>
+            <span>{user.contact.first_name} {user.contact.last_name}</span>
+            <span>{user.contact.address}</span>
+            <span>{user.contact.postal_code} {user.contact.city}</span>
+            <span>{user.contact.country}</span>
+            <span>{user.contact.telephone}</span>
+          </StyledContact>
+        </Column>
+        <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
+          <StyledContact>
+            <Heading type="h2">
+              Verzendadres
+            </Heading>
+            <span>{contact.company}</span>
+            <span>{contact.first_name} {contact.last_name}</span>
+            <span>{contact.address}</span>
+            <span>{contact.postal_code} {contact.city}</span>
+            <span>{contact.country}</span>
+            <span>{contact.telephone}</span>
+          </StyledContact>
+        </Column>
+      </StyledRow>
+      <Table<ProductAmountPair>
+        rows={products}
+        columns={{
+          amount: [{
+            heading: 'Aantal',
+            sortable: true
+          }],
+          product: [{
+            heading: 'Naam',
+            render: (value) => value.name,
+            sortable: true
+          }, {
+            heading: 'Code',
+            render: (value) => codeFormat(value.code),
+            sortable: true
+          }, {
+            heading: 'Prijs',
+            render: (value, row) => priceFormat(value.price * row.amount),
+            sortable: true
+          }]
+        }}
+      />
+      <StyledBottom>
+        Totaalprijs: {priceFormat(total)} ({priceFormat(subtotal)} zonder kortingen)
+      </StyledBottom>
+      <StyledFooter>
+        <Button onClick={previousStep}>
+          Vorige
+        </Button>
+        <Button onClick={() => history.push('/orders')}>
+          Afronden
+        </Button>
+      </StyledFooter>
+    </>
   );
 }
 

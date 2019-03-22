@@ -60,7 +60,7 @@ export function Customers() {
                 const { icon, color } = INVOICE_STATES[value[0].state];
 
                 return (
-                  <FontAwesomeIcon icon={icon} color={color}/>
+                  <FontAwesomeIcon icon={icon} color={color} fixedWidth={true}/>
                 );
               }
             }],

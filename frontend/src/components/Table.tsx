@@ -1,9 +1,10 @@
 import styled from '@emotion/styled/macro';
-import { faMinus } from '@fortawesome/free-solid-svg-icons';
+import { faMinus, faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 
 import { Breakpoint, Identifiable } from '../types';
+import { compare } from '../utils/compare';
 import { forBreakpoint } from '../utils/forBreakpoint';
 
 type Props<T> = {
@@ -11,29 +12,68 @@ type Props<T> = {
   columns: {
     [K in keyof T]?: Array<{
       heading: string,
-      render?: (value: T[K], row: T) => ReactNode | undefined
+      render?: (value: T[K], row: T) => ReactNode | undefined,
+      sort?: (a: T, b: T) => number
     }>
   },
   onClick?: (row: T) => void
 };
 
 export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<T>) {
-  const columnKeys = Object.keys(columns) as Array<keyof typeof columns>;
+  const [sort, setSort] = useState<{ key: keyof T, index: number, reverse: boolean }>();
+
+  const columnKeys = Object.keys(columns) as Array<keyof T>;
+  const updateSort = (key: keyof T, index: number) => {
+    if (!sort || key !== sort.key || index !== sort.index) {
+      setSort({
+        key,
+        index,
+        reverse: false
+      });
+
+      return;
+    }
+
+    setSort(sort.reverse ? undefined : {
+      key,
+      index,
+      reverse: true
+    });
+  };
 
   return (
     <StyledWrapper>
       <StyledTable>
         <StyledHead>
           <StyledRow clickable={false}>
-            {columnKeys.map((key) => columns[key]!.map((column, index) => (
-              <StyledHeading key={`${key}-${index}`}>
-                {column.heading}
-              </StyledHeading>
-            )))}
+            {columnKeys.map((key) => columns[key]!.map((column, index) => {
+              const current = Boolean(sort && sort.key === key && sort.index === index);
+              const reverse = Boolean(sort && sort.reverse);
+
+              return (
+                <StyledHeading
+                  key={`${key}-${index}`}
+                  onClick={() => updateSort(key, index)}
+                  sortable={Boolean(column.sort)}
+                >
+                  {column.sort && (
+                    <StyledSort icon={current ? reverse ? faSortDown : faSortUp : faSort} enabled={current}/>
+                  )} {column.heading}
+                </StyledHeading>
+              );
+            }))}
           </StyledRow>
         </StyledHead>
         <tbody>
-          {rows.map((row) => (
+          {[...rows]
+            .sort((a, b) => {
+              if (!sort || !columns[sort.key] || !columns[sort.key]![sort.index]) {
+                return compare(a.id, b.id);
+              }
+
+              return columns[sort.key]![sort.index].sort!(a, b) * (sort.reverse ? -1 : 1);
+            })
+            .map((row) => (
             <StyledRow
               key={row.id}
               clickable={Boolean(onClick)}
@@ -145,7 +185,17 @@ const StyledData = styled.td<{ heading: string }>`
   `)};
 `;
 
-const StyledHeading = styled.th`
+const StyledHeading = styled.th<{ sortable: boolean }>`
   text-align: left;
   padding: .5rem;
+  ${(props) => props.sortable && `
+    :hover {
+      cursor: pointer;
+    }
+  `};
+`;
+
+const StyledSort = styled(FontAwesomeIcon, { shouldForwardProp: (name) => name !== 'enabled' })<{ enabled: boolean }>`
+  opacity: ${(props) => props.enabled ? 1 : .25};
+  transition: opacity .25s ease;
 `;

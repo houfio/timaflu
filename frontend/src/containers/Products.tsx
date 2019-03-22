@@ -12,6 +12,7 @@ import { PRODUCT_STATES } from '../constants';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable, ProductState } from '../types';
 import { codeFormat } from '../utils/codeFormat';
+import { compare } from '../utils/compare';
 
 type Product = Identifiable & {
   name: string,
@@ -75,14 +76,17 @@ export function Products() {
               }],
               code: [{
                 heading: 'Code',
-                render: codeFormat
+                render: codeFormat,
+                sort: (a, b) => compare(a.code, b.code)
               }],
               name: [{
-                heading: 'Naam'
+                heading: 'Naam',
+                sort: (a, b) => compare(a.name, b.name)
               }],
               manufacturer: [{
                 heading: 'Fabrikant',
-                render: (value) => value.contact.company
+                render: (value) => value.contact.company,
+                sort: (a, b) => compare(a.manufacturer.contact.company, b.manufacturer.contact.company)
               }]
             }}
             onClick={({ id }) => history.push(`/products/${id}`)}

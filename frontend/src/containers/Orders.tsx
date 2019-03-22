@@ -13,6 +13,7 @@ import { useRouter } from '../hooks/useRouter';
 import { Identifiable, InvoiceState } from '../types';
 import { priceFormat } from '../utils/priceFormat';
 import { truncate } from '../utils/truncate';
+import { codeFormat } from '../utils/codeFormat';
 
 type Order = Identifiable & {
   date: string,
@@ -66,6 +67,10 @@ export function Orders() {
                     </>
                   );
                 }
+              }],
+              id: [{
+                heading: 'Code',
+                render: codeFormat
               }],
               contact: [{
                 heading: 'Klant',

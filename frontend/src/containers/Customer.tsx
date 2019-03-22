@@ -13,18 +13,22 @@ type Params = {
   id: string
 };
 
-type Product = Identifiable & {
-  name: string
+type User = Identifiable & {
+  contact: {
+    company: string
+  }
 };
 
-export function Product({ match: { params: { id } } }: RouteComponentProps<Params>) {
+export function Customer({ match: { params: { id } } }: RouteComponentProps<Params>) {
   const { loading, data } = useQuery<{
-    product: Product
+    user: User
   }>(gql`
-    query Product($id: ID!) {
-      product(id: $id) {
+    query Customer($id: ID!) {
+      user(id: $id) {
         id
-        name
+        contact {
+          company
+        }
       }
     }
   `, {
@@ -34,18 +38,18 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
   });
 
   return (
-    <Content title="Product">
-      {!loading && data ? data.product ? (
+    <Content title="Klant">
+      {!loading && data ? data.user ? (
         <>
           <Heading type="h1">
-            {data.product.name}
+            {data.user.contact.company}
           </Heading>
           <Heading type="h3">
-            Product {codeFormat(data.product.id)}
+            Klant {codeFormat(data.user.id)}
           </Heading>
         </>
       ) : (
-        <Redirect to="/products"/>
+        <Redirect to="/customers"/>
       ) : (
         <Loading/>
       )}

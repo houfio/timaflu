@@ -34,7 +34,7 @@ export const OrderLine = objectType({
       }
     });
     t.int('amount');
-    t.string('description');
+    t.string('description', { nullable: true });
     t.int('total');
   }
 });

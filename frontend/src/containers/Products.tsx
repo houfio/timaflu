@@ -11,6 +11,7 @@ import { Table } from '../components/Table';
 import { PRODUCT_STATES } from '../constants';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable, ProductState } from '../types';
+import { codeFormat } from '../utils/codeFormat';
 
 type Product = Identifiable & {
   name: string,
@@ -72,11 +73,12 @@ export function Products() {
                   ) : undefined;
                 }
               }],
+              code: [{
+                heading: 'Code',
+                render: codeFormat
+              }],
               name: [{
                 heading: 'Naam'
-              }],
-              code: [{
-                heading: 'Code'
               }],
               manufacturer: [{
                 heading: 'Fabrikant',

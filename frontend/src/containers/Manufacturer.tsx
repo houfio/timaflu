@@ -9,6 +9,7 @@ import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
+import { codeFormat } from '../utils/codeFormat';
 import { priceFormat } from '../utils/priceFormat';
 
 import { Products } from './Products';
@@ -19,6 +20,7 @@ type Params = {
 
 type Products = Identifiable & {
   name: string,
+  code: string,
   price: number,
   description_short: string
 };
@@ -45,6 +47,7 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
         products {
           id
           name
+          code
           price
           description_short
         }
@@ -63,14 +66,18 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
           <Heading type="h1">
             {data.manufacturer.contact.company}
           </Heading>
-          <Heading type="h2">
-            Producten
+          <Heading type="h3">
+            Fabrikant {codeFormat(data.manufacturer.id)}
           </Heading>
           <Table<Products>
             rows={data.manufacturer.products}
             columns={{
               name: [{
                 heading: 'Naam'
+              }],
+              code: [{
+                heading: 'Code',
+                render: codeFormat
               }],
               price: [{
                 heading: 'Prijs',

@@ -1,18 +1,19 @@
 import styled from '@emotion/styled/macro';
 import { Form, FormikProvider, useFormik } from 'formik';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 
 import { Breakpoint, Identifiable } from '../types';
 import { forBreakpoint } from '../utils/forBreakpoint';
 import { truncate } from '../utils/truncate';
 
-import { Button } from './Button';
 import { Input } from './Input';
+import { Loading } from './Loading';
 
 type Props<T> = {
   onSearch: (search: string) => void,
-  onSubmit: (value: T) => void,
-  results: T[],
+  value?: T,
+  onChange: (value: T) => void,
+  options?: T[],
   renderLine: (value: T) => string,
   render: (value: T) => ReactNode
 };
@@ -21,8 +22,7 @@ type Values = {
   search: string
 };
 
-export function Search<T extends Identifiable>({ onSearch, onSubmit, results, renderLine, render }: Props<T>) {
-  const [selected, setSelected] = useState<T>(() => results[0]);
+export function Search<T extends Identifiable>({ onSearch, value, onChange, options, renderLine, render }: Props<T>) {
   const formik = useFormik<Values>({
     initialValues: {
       search: ''
@@ -33,33 +33,32 @@ export function Search<T extends Identifiable>({ onSearch, onSubmit, results, re
 
   return (
     <FormikProvider value={formik}>
-      <Form>
-        <StyledSearch>
-          <StyledBox>
-            <StyledLeft>
+      <StyledSearch>
+        <StyledBox>
+          <StyledLeft>
+            <Form>
               <Input name="search"/>
               <StyledResults>
-                {results.map((value) => (
+                {options ? options.map((option) => (
                   <StyledResult
-                    key={value.id}
-                    onClick={() => setSelected(value)}
-                    active={selected && value.id === selected.id}
+                    key={option.id}
+                    onClick={() => onChange(option)}
+                    active={value && option.id === value.id}
                     type="button"
                   >
-                    {truncate(renderLine(value), 20)}
+                    {truncate(renderLine(option), 20)}
                   </StyledResult>
-                ))}
+                )) : (
+                  <Loading/>
+                )}
               </StyledResults>
-            </StyledLeft>
-            <div>
-              {selected && render(selected)}
-            </div>
-          </StyledBox>
-          <StyledButton type="button" disabled={!selected} onClick={() => selected && onSubmit(selected)}>
-            Selecteren
-          </StyledButton>
-        </StyledSearch>
-      </Form>
+            </Form>
+          </StyledLeft>
+          <div>
+            {value && render(value)}
+          </div>
+        </StyledBox>
+      </StyledSearch>
     </FormikProvider>
   );
 }
@@ -72,7 +71,6 @@ const StyledSearch = styled.div`
 const StyledBox = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
   padding: 1.5rem;
   background-color: whitesmoke;
   border-radius: .5rem;
@@ -117,7 +115,7 @@ const StyledResult = styled.button<{ active?: boolean }>`
     border-top-left-radius: .5rem;
     border-top-right-radius: .5rem;
   }
-  :last-child {
+  :nth-child(5) {
     border-bottom-left-radius: .5rem;
     border-bottom-right-radius: .5rem;
   }
@@ -125,8 +123,4 @@ const StyledResult = styled.button<{ active?: boolean }>`
     cursor: pointer;
     background-color: rgba(0, 0, 0, .1);
   }
-`;
-
-const StyledButton = styled(Button)`
-  align-self: flex-end;
 `;

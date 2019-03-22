@@ -1,4 +1,4 @@
-import { objectType } from 'yoga';
+import { intArg, objectType, stringArg } from 'yoga';
 
 import { Contact, Order } from '../context';
 import { execute } from '../utils/execute';
@@ -25,7 +25,11 @@ export const User = objectType({
     });
     t.list.field('billing', {
       type: 'Contact',
-      resolve: ({ id }, args, { db }) => execute<Contact>(db, `
+      args: {
+        search: stringArg({ nullable: true }),
+        limit: intArg({ nullable: true })
+      },
+      resolve: ({ id }, { search, limit }, { db }) => execute<Contact>(db, `
         SELECT *
         FROM contact c
         WHERE c.id IN (
@@ -33,7 +37,11 @@ export const User = objectType({
           FROM user_billing b
           WHERE b.user_id = :id
         )
-      `, { id })
+        AND concat(c.address, ' ', c.postal_code, ' ', c.city) LIKE :search
+        ${limit !== undefined ? `
+          LIMIT :limit
+        ` : ''}
+      `, { id, search: `%${search}%`, limit })
     });
     t.list.field('orders', {
       type: 'Order',

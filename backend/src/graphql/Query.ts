@@ -1,4 +1,4 @@
-import { arg, idArg, intArg, queryType, stringArg } from 'yoga';
+import { arg, booleanArg, idArg, intArg, queryType, stringArg } from 'yoga';
 
 import { Manufacturer, Order, Product, User } from '../context';
 import { execute } from '../utils/execute';
@@ -25,11 +25,11 @@ export const Query = queryType({
     t.list.field('users', {
       type: 'User',
       args: {
-        role: arg({ type: 'UserRole', nullable: true }),
         search: stringArg({ nullable: true }),
-        limit: intArg({ nullable: true })
+        limit: intArg({ nullable: true }),
+        role: arg({ type: 'UserRole', nullable: true })
       },
-      resolve: (root, { search = '', role, limit }, { db }) => execute<User>(db, `
+      resolve: (root, { search = '', limit, role }, { db }) => execute<User>(db, `
         SELECT *
         FROM user u
         WHERE (u.contact_id IN (
@@ -48,7 +48,7 @@ export const Query = queryType({
         ${limit !== undefined ? `
           LIMIT :limit
         ` : ''}
-      `, { search: `%${search}%`, role, limit })
+      `, { search: `%${search}%`, limit, role })
     });
     t.field('product', {
       type: 'Product',
@@ -69,10 +69,24 @@ export const Query = queryType({
     });
     t.list.field('products', {
       type: 'Product',
-      resolve: (root, args, { db }) => execute<Product>(db, `
+      args: {
+        search: stringArg({ nullable: true }),
+        limit: intArg({ nullable: true }),
+        sold: booleanArg({ nullable: true })
+      },
+      resolve: (root, { search = '', limit, sold }, { db }) => execute<Product>(db, `
         SELECT *
-        FROM product
-      `)
+        FROM product p
+        WHERE p.name LIKE :search
+        ${sold !== undefined ? sold ? `
+          AND p.min_stock > 0
+        ` : `
+          AND (p.min_stock IS NULL OR p.min_stock = 0)
+        ` : ''}
+        ${limit !== undefined ? `
+          LIMIT :limit
+        ` : ''}
+      `, { search: `%${search}%`, limit })
     });
     t.field('manufacturer', {
       type: 'Manufacturer',

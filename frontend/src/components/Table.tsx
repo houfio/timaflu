@@ -13,7 +13,8 @@ type Props<T> = {
     [K in keyof T]?: Array<{
       heading: string,
       render?: (value: T[K], row: T) => ReactNode | undefined,
-      sortable?: boolean
+      sortable?: boolean,
+      order?: number
     }>
   },
   onClick?: (row: T) => void
@@ -53,7 +54,7 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
               return (
                 <StyledHeading
                   key={`${key}-${index}`}
-                  onClick={() => updateSort(key, index)}
+                  onClick={() => column.sortable && updateSort(key, index)}
                   sortable={Boolean(column.sortable)}
                 >
                   {column.sortable && (
@@ -77,31 +78,31 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
 
               if ((typeof resultA !== 'string' && typeof resultA !== 'number')
                 || (typeof resultB !== 'string' && typeof resultB !== 'number')) {
-                throw new Error();
+                throw new Error('no u');
               }
 
               return compare(resultA, resultB) * (sort.reverse ? -1 : 1);
             })
             .map((row) => (
-            <StyledRow
-              key={row.id}
-              clickable={Boolean(onClick)}
-              onClick={() => onClick && onClick(row)}
-              tabIndex={onClick ? 0 : undefined}
-            >
-              {columnKeys.map((key) => columns[key]!.map((column, index) => {
-                const children = column.render ? column.render(row[key], row) : row[key];
+              <StyledRow
+                key={row.id}
+                clickable={Boolean(onClick)}
+                onClick={() => onClick && onClick(row)}
+                tabIndex={onClick ? 0 : undefined}
+              >
+                {columnKeys.map((key) => columns[key]!.map((column, index) => {
+                  const children = column.render ? column.render(row[key], row) : row[key];
 
-                return (
-                  <StyledData key={`${key}-${index}`} heading={column.heading}>
-                    {children ? children : (
-                      <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
-                    )}
-                  </StyledData>
-                );
-              }))}
-            </StyledRow>
-          ))}
+                  return (
+                    <StyledData key={`${key}-${index}`} heading={column.heading}>
+                      {children ? children : (
+                        <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
+                      )}
+                    </StyledData>
+                  );
+                }))}
+              </StyledRow>
+            ))}
         </tbody>
       </StyledTable>
     </StyledWrapper>

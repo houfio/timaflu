@@ -7,7 +7,7 @@ type Props = {
   step: number,
   steps: Array<{
     icon: IconProp,
-    render: () => ReactNode
+    children: ReactNode
   }>
 };
 
@@ -17,12 +17,12 @@ export function Stepper({ step: current, steps }: Props) {
       <StyledSteps>
         {steps.map((step, index) => (
           <StyledProgress key={index} active={current >= index}>
-            <FontAwesomeIcon icon={step.icon} fixedWidth={true} color="white"/>
+            <FontAwesomeIcon icon={step.icon} color="white"/>
           </StyledProgress>
         ))}
       </StyledSteps>
-      <StyledStep>
-        {steps[current].render()}
+      <StyledStep current={current}>
+        {steps[current].children}
       </StyledStep>
     </StyledStepper>
   );
@@ -40,7 +40,11 @@ const StyledSteps = styled.div`
 
 const StyledProgress = styled.div<{ active: boolean }>`
   position: relative;
-  padding: .5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
   background-color: #24292e;
   border-radius: .5rem;
   opacity: ${(props) => props.active ? 1 : .5};
@@ -60,8 +64,9 @@ const StyledProgress = styled.div<{ active: boolean }>`
   }
 `;
 
-const StyledStep = styled.div`
+const StyledStep = styled.div<{ current: number }>`
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-top: ${(props) => props.current * 4}rem;
 `;

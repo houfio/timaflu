@@ -29,9 +29,9 @@ export const Product = objectType({
     t.int('min_stock', { nullable: true });
     t.string('contents', { nullable: true });
     t.string('location', { nullable: true });
-    t.string('packaging', { nullable: true });
-    t.string('packaging_amount', { nullable: true });
-    t.string('packaging_size', { nullable: true });
+    t.int('packaging', { nullable: true });
+    t.int('packaging_amount', { nullable: true });
+    t.int('packaging_size', { nullable: true });
     t.string('min_order', { nullable: true });
     t.string('sold_since', { nullable: true });
     t.list.field('substances', {

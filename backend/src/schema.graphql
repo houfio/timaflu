@@ -87,9 +87,9 @@ type Product {
   min_order: String
   min_stock: Int
   name: String!
-  packaging: String
-  packaging_amount: String
-  packaging_size: String
+  packaging: Int
+  packaging_amount: Int
+  packaging_size: Int
   price: Float!
   sold_since: String
   state: ProductState!
@@ -111,7 +111,7 @@ type Query {
   order(id: ID!): Order
   orders: [Order!]!
   product(id: ID!): Product
-  products: [Product!]!
+  products(limit: Int, search: String, sold: Boolean): [Product!]!
   user(id: ID!): User
   users(limit: Int, role: UserRole, search: String): [User!]!
 }
@@ -127,7 +127,7 @@ type Substance {
 }
 
 type User {
-  billing: [Contact!]!
+  billing(limit: Int, search: String): [Contact!]!
   contact: Contact!
   discount: Int!
   id: ID!

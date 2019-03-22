@@ -1,19 +1,18 @@
 import styled from '@emotion/styled/macro';
 import { Form, FormikProvider, useFormik } from 'formik';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 
 import { Breakpoint, Identifiable } from '../types';
+import { forBreakpoint } from '../utils/forBreakpoint';
 import { truncate } from '../utils/truncate';
 
 import { Button } from './Button';
 import { Input } from './Input';
-import { Loading } from './Loading';
-import { forBreakpoint } from '../utils/forBreakpoint';
 
 type Props<T> = {
   onSearch: (search: string) => void,
   onSubmit: (value: T) => void,
-  results?: T[],
+  results: T[],
   renderLine: (value: T) => string,
   render: (value: T) => ReactNode
 };
@@ -23,7 +22,7 @@ type Values = {
 };
 
 export function Search<T extends Identifiable>({ onSearch, onSubmit, results, renderLine, render }: Props<T>) {
-  const [selected, setSelected] = useState<T>();
+  const [selected, setSelected] = useState<T>(() => results[0]);
   const formik = useFormik<Values>({
     initialValues: {
       search: ''
@@ -31,15 +30,6 @@ export function Search<T extends Identifiable>({ onSearch, onSubmit, results, re
     validate: ({ search }) => onSearch(search),
     onSubmit: ({ search }) => onSearch(search)
   });
-
-  useEffect(
-    () => {
-      if (results && !selected) {
-        setSelected(results[0]);
-      }
-    },
-    [results]
-  );
 
   return (
     <FormikProvider value={formik}>
@@ -49,7 +39,7 @@ export function Search<T extends Identifiable>({ onSearch, onSubmit, results, re
             <StyledLeft>
               <Input name="search"/>
               <StyledResults>
-                {results ? results.map((value) => (
+                {results.map((value) => (
                   <StyledResult
                     key={value.id}
                     onClick={() => setSelected(value)}
@@ -58,9 +48,7 @@ export function Search<T extends Identifiable>({ onSearch, onSubmit, results, re
                   >
                     {truncate(renderLine(value), 20)}
                   </StyledResult>
-                )) : (
-                  <Loading/>
-                )}
+                ))}
               </StyledResults>
             </StyledLeft>
             <div>

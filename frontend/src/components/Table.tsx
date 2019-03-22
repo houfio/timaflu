@@ -66,7 +66,7 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
           </StyledRow>
         </StyledHead>
         <tbody>
-          {[...rows]
+          {[...rows || []]
             .sort((a, b) => {
               if (!sort || !columns[sort.key] || !columns[sort.key]![sort.index]) {
                 return compare(a.id, b.id);

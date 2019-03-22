@@ -2,12 +2,13 @@ import styled from '@emotion/styled/macro';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { ReactNode, useEffect, useState } from 'react';
 
-import { Identifiable } from '../types';
+import { Breakpoint, Identifiable } from '../types';
 import { truncate } from '../utils/truncate';
 
 import { Button } from './Button';
 import { Input } from './Input';
 import { Loading } from './Loading';
+import { forBreakpoint } from '../utils/forBreakpoint';
 
 type Props<T> = {
   onSearch: (search: string) => void,
@@ -82,14 +83,21 @@ const StyledSearch = styled.div`
 
 const StyledBox = styled.div`
   display: flex;
+  flex-direction: column;
   margin-bottom: 1rem;
   padding: 1.5rem;
   background-color: whitesmoke;
   border-radius: .5rem;
+  ${forBreakpoint(Breakpoint.TabletLandscape, `
+    flex-direction: row;
+  `)};
 `;
 
 const StyledLeft = styled.div`
-  margin-right: 1rem;
+  margin: 0 0 1rem 0;
+  ${forBreakpoint(Breakpoint.TabletLandscape, `
+    margin: 0 1rem 0 0;
+  `)};
 `;
 
 const StyledResults = styled.div`

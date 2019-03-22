@@ -9,6 +9,7 @@ import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
+import { priceFormat } from '../utils/priceFormat';
 
 import { Products } from './Products';
 
@@ -73,7 +74,7 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
               }],
               price: [{
                 heading: 'Prijs',
-                render: (value) => `€${value}`
+                render: priceFormat
               }],
               description_short: [{
                 heading: 'Beschrijving'

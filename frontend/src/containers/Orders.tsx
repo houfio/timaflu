@@ -11,6 +11,7 @@ import { Table } from '../components/Table';
 import { INVOICE_STATES } from '../constants';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable, InvoiceState } from '../types';
+import { priceFormat } from '../utils/priceFormat';
 import { truncate } from '../utils/truncate';
 
 type Order = Identifiable & {
@@ -76,7 +77,7 @@ export function Orders() {
               }],
               total: [{
                 heading: 'Prijs',
-                render: (value) => `€${value.toFixed(2)}`
+                render: priceFormat
               }]
             }}
             onClick={({ id }) => history.push(`/orders/${id}`)}

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled/macro';
+import { faCheck, faDatabase, faFolderOpen, faUser } from '@fortawesome/free-solid-svg-icons';
 import { gql } from 'apollo-boost';
-import { FormikProvider, useFormik } from 'formik';
 import React, { useState } from 'react';
 import { useQuery } from 'react-apollo-hooks';
 
@@ -8,6 +8,7 @@ import { Content } from '../components/Content';
 import { Heading } from '../components/Heading';
 import { Loading } from '../components/Loading';
 import { Search } from '../components/Search';
+import { Stepper } from '../components/Stepper';
 import { useDebounce } from '../hooks/useDebounce';
 import { Identifiable } from '../types';
 
@@ -29,10 +30,10 @@ type Product = Identifiable & {
 };
 
 export function CreateOrder() {
-  const [customer, setCustomer] = useState<string>();
+  const [step, setStep] = useState(0);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 250);
-  const { data } = useQuery<{
+  const { loading, data } = useQuery<{
     users: User[],
     products: Product[]
   }>(gql`
@@ -60,45 +61,67 @@ export function CreateOrder() {
       search: debouncedSearch
     }
   });
-  const formik = useFormik({
-    initialValues: {},
-    onSubmit: console.log
-  });
 
   return (
     <Content title="Bestelling aanmaken">
-      {!customer ? (
-        <>
-          <StyledHeading type="h2">
-            Selecteer klant
-          </StyledHeading>
-          <Search<User>
-            onSearch={setSearch}
-            onSubmit={({ id }) => setCustomer(id)}
-            results={data && data.users}
-            renderLine={(value) => `${value.contact.first_name} ${value.contact.last_name}`}
-            render={(value) => (
-              <>
-                <Heading type="h2">
-                  {value.contact.company}
-                </Heading>
-                <Heading type="h3">
-                  {value.contact.first_name} {value.contact.last_name}
-                </Heading>
-                <StyledDetails>
-                  <span>{value.contact.address}</span>
-                  <span>{value.contact.postal_code} {value.contact.city}</span>
-                  <span>{value.contact.country}</span>
-                  <span>{value.contact.telephone}</span>
-                </StyledDetails>
-              </>
-            )}
-          />
-        </>
-      ) : data ? (
-        <FormikProvider value={formik}>
-          {customer}
-        </FormikProvider>
+      {!loading && data && data.users ? (
+        <Stepper
+          step={step}
+          steps={[
+            {
+              icon: faUser,
+              render: () => (
+                <>
+                  <StyledHeading type="h2">
+                    Selecteer klant
+                  </StyledHeading>
+                  <Search<User>
+                    onSearch={setSearch}
+                    onSubmit={() => setStep(1)}
+                    results={data && data.users}
+                    renderLine={(value) => `${value.contact.first_name} ${value.contact.last_name}`}
+                    render={(value) => (
+                      <>
+                        <Heading type="h2">
+                          {value.contact.company}
+                        </Heading>
+                        <Heading type="h3">
+                          {value.contact.first_name} {value.contact.last_name}
+                        </Heading>
+                        <StyledDetails>
+                          <span>{value.contact.address}</span>
+                          <span>{value.contact.postal_code} {value.contact.city}</span>
+                          <span>{value.contact.country}</span>
+                          <span>{value.contact.telephone}</span>
+                        </StyledDetails>
+                      </>
+                    )}
+                  />
+                </>
+              )
+            },
+            {
+              icon: faFolderOpen,
+              render: () => (
+                <StyledHeading type="h2">
+                  Selecteer producten
+                </StyledHeading>
+              )
+            },
+            {
+              icon: faDatabase,
+              render: () => (
+                <span/>
+              )
+            },
+            {
+              icon: faCheck,
+              render: () => (
+                <span/>
+              )
+            }
+          ]}
+        />
       ) : (
         <Loading/>
       )}

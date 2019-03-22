@@ -311,6 +311,13 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
             heading: 'Prijs',
             render: (value, row) => priceFormat(value.price * row.amount),
             sortable: true
+          }, {
+            heading: '',
+            render: (value) => (
+              <Button onClick={() => setProducts(products.filter((p) => p.id !== value.id))}>
+                <FontAwesomeIcon icon={faTimes}/>
+              </Button>
+            )
           }]
         }}
       />

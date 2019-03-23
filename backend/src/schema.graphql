@@ -57,6 +57,7 @@ type Manufacturer {
 type Order {
   contact: Contact!
   date: String!
+  days_left: Int!
   description: String
   discount: Int!
   id: ID!

@@ -1,4 +1,5 @@
 import styled from '@emotion/styled/macro';
+import { faCoins } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import React from 'react';
@@ -22,7 +23,8 @@ type Order = Identifiable & {
   },
   description?: string,
   total: number,
-  state: InvoiceState
+  state: InvoiceState,
+  days_left: number
 };
 
 export function Orders() {
@@ -39,6 +41,7 @@ export function Orders() {
         description
         total
         state
+        days_left
       }
     }
   `);
@@ -57,12 +60,16 @@ export function Orders() {
             columns={{
               state: [{
                 heading: 'Status',
-                render: (value) => {
+                render: (value, row) => {
                   const { name, color, icon } = INVOICE_STATES[value];
 
                   return (
                     <>
-                      <StyledState icon={icon} color={color} fixedWidth={true}/>
+                      <StyledState
+                        icon={row.days_left <= 0 ? faCoins : icon}
+                        color={row.days_left <= 0 ? 'red' : color}
+                        fixedWidth={true}
+                      />
                       {name}
                     </>
                   );

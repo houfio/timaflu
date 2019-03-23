@@ -8,6 +8,7 @@ import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
 import { Redirect, RouteComponentProps } from 'react-router';
 
+import { Button } from '../components/Button';
 import { Column } from '../components/Column';
 import { Content } from '../components/Content';
 import { Heading } from '../components/Heading';
@@ -48,7 +49,8 @@ type Contact = {
   address: string,
   postal_code: string,
   city: string,
-  country: string
+  country: string,
+  telephone: string
 };
 
 type Order = Identifiable & {
@@ -59,7 +61,8 @@ type Order = Identifiable & {
   user: {
     contact: Contact
   },
-  contact: Contact
+  contact: Contact,
+  days_left: number
 };
 
 export function Order({ match: { params: { id } } }: RouteComponentProps<Params>) {
@@ -109,7 +112,9 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
           postal_code
           city
           country
+          telephone
         }
+        days_left
       }
     }
   `, {
@@ -190,6 +195,11 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
             heading="Producten"
           />
           <StyledSpacer/>
+          {data.order.days_left <= 0 && (
+            <StyledWarning>
+              De betaalperiode voor één of meer van de facturen is verstreken. Telefoonnummer: {data.order.contact.telephone}
+            </StyledWarning>
+          )}
           <Table<Invoice>
             rows={data.order.invoices}
             columns={{
@@ -220,6 +230,13 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
                 heading: 'Aantal producten',
                 render: (value) => value.length,
                 sortable: true
+              }, {
+                heading: '',
+                render: (value, row) => row.state === 'SENT' ? (
+                  <Button>
+                    Factureer
+                  </Button>
+                ) : ''
               }]
             }}
             heading="Facturen"
@@ -258,4 +275,12 @@ const StyledState = styled(FontAwesomeIcon)`
 
 const StyledSpacer = styled.div`
   height: 1rem;
+`;
+
+const StyledWarning = styled.div`
+  margin-bottom: 1rem;
+  padding: 1rem;
+  color: white;
+  background-color: red;
+  border-radius: .5rem;
 `;

@@ -89,5 +89,18 @@ export const Order = objectType({
         return result.length ? result[0].state : 0;
       }
     });
+    t.int('days_left', {
+      resolve: async ({ id }, args, { db }) => {
+        const query = `
+          SELECT ifnull(31 - datediff(now(), min(i.date)), 31) days_left
+          FROM \`order\` o
+            JOIN invoice i ON o.id = i.order_id AND i.state != 5
+          WHERE o.id = :id;
+        `;
+        const result = await execute<{ days_left: number }>(db, query, { id });
+
+        return result[0].days_left;
+      }
+    });
   }
 });

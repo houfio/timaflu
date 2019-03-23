@@ -21,6 +21,7 @@ import { Breakpoint, Identifiable } from '../types';
 import { codeFormat } from '../utils/codeFormat';
 import { priceFormat } from '../utils/priceFormat';
 import { truncate } from '../utils/truncate';
+import { forBreakpoint } from '../utils/forBreakpoint';
 
 type Contact = Identifiable & {
   company: string,
@@ -55,6 +56,7 @@ type Product = Identifiable & {
 
 type ProductAmountPair = Identifiable & {
   product: Product,
+  description: string,
   amount: number
 };
 
@@ -196,6 +198,7 @@ function StepOne({ nextStep, user, setUser }: StepProps) {
 
 function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, total }: StepProps) {
   type Values = {
+    description: string,
     amount: string
   };
 
@@ -228,9 +231,10 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
   });
   const formik = useFormik<Values>({
     initialValues: {
+      description: '',
       amount: '1'
     },
-    onSubmit: ({ amount }, { resetForm }) => {
+    onSubmit: ({ description, amount }, { resetForm }) => {
       if (!product) {
         return;
       }
@@ -242,6 +246,7 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
         {
           id: product.id,
           product,
+          description,
           amount: Number(amount) + (current ? current.amount : 0)
         }
       ]);
@@ -276,7 +281,8 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
               <span>Prijs: {priceFormat(value.price)}</span>
             </StyledDetails>
             <Form>
-              <StyledInput name="amount" type="number" min="1" max={value.stock}/>
+              <StyledInput name="amount" type="number" min="1" max={value.stock} margin={true}/>
+              <StyledInput name="description" placeholder="Extra notitie" margin={true}/>
               <Button type="submit">
                 Toevoegen
               </Button>
@@ -311,10 +317,14 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
             heading: 'Prijs',
             render: (value, row) => priceFormat(value.price * row.amount),
             sortable: true
+          }],
+          description: [{
+            heading: 'Beschrijving',
+            render: (value) => truncate(value, 20)
           }, {
             heading: '',
-            render: (value) => (
-              <Button onClick={() => setProducts(products.filter((p) => p.id !== value.id))}>
+            render: (value, row) => (
+              <Button onClick={() => setProducts(products.filter((p) => p.id !== row.product.id))}>
                 <FontAwesomeIcon icon={faTimes}/>
               </Button>
             )
@@ -398,14 +408,25 @@ function StepThree({ previousStep, nextStep, user, contact, setContact }: StepPr
 }
 
 function StepFour({ previousStep, user, products, contact, subtotal, total }: StepProps) {
+  type Values = {
+    description: string
+  };
+
   const { history } = useRouter();
 
   if (!user || !products.length || !contact) {
     return null;
   }
 
+  const formik = useFormik<Values>({
+    initialValues: {
+      description: ''
+    },
+    onSubmit: () => history.push('/orders')
+  });
+
   return (
-    <>
+    <FormikProvider value={formik}>
       <StyledHeading type="h2">
         Bestelling controleren
       </StyledHeading>
@@ -456,21 +477,29 @@ function StepFour({ previousStep, user, products, contact, subtotal, total }: St
             heading: 'Prijs',
             render: (value, row) => priceFormat(value.price * row.amount),
             sortable: true
+          }],
+          description: [{
+            heading: 'Beschrijving',
+            render: (value) => truncate(value, 20)
           }]
         }}
+        heading="Producten"
       />
-      <StyledBottom>
-        Totaalprijs: {priceFormat(total)} ({priceFormat(subtotal)} zonder kortingen)
-      </StyledBottom>
-      <StyledFooter>
-        <Button onClick={previousStep}>
-          Vorige
-        </Button>
-        <Button onClick={() => history.push('/orders')}>
-          Afronden
-        </Button>
-      </StyledFooter>
-    </>
+      <Form>
+        <StyledFooter column={true}>
+          <StyledInput name="description" placeholder="Extra notitie" margin={false}/>
+          <StyledTotal>Totaalprijs: {priceFormat(total)} ({priceFormat(subtotal)} zonder kortingen)</StyledTotal>
+        </StyledFooter>
+        <StyledFooter>
+          <Button type="button" onClick={previousStep}>
+            Vorige
+          </Button>
+          <Button type="submit">
+            Afronden
+          </Button>
+        </StyledFooter>
+      </Form>
+    </FormikProvider>
   );
 }
 
@@ -478,10 +507,16 @@ const StyledHeading = styled(Heading)`
   margin-bottom: 1rem;
 `;
 
-const StyledFooter = styled.div<{ right?: boolean }>`
+const StyledFooter = styled.div<{ right?: boolean, column?: boolean }>`
   display: flex;
+  flex-direction: ${(props) => props.column ? 'column' : 'row'};
   justify-content: ${(props) => props.right ? 'flex-end' : 'space-between'};
+  align-items: ${(props) => props.column ? 'flex-start' : 'center'};
   margin: 1rem 0;
+  ${forBreakpoint(Breakpoint.TabletLandscape, `
+    flex-direction: row;
+    align-items: center;
+  `)};
 `;
 
 const StyledDetails = styled.div`
@@ -490,8 +525,10 @@ const StyledDetails = styled.div`
   margin: 2rem 0;
 `;
 
-const StyledInput = styled(Input)`
-  margin-bottom: 1rem;
+const StyledInput = styled(Input)<{ margin: boolean }>`
+  display: block;
+  max-width: 15rem;
+  margin-bottom: ${(props) => props.margin ? 1 : 0}rem;
 `;
 
 const StyledBottom = styled.div`
@@ -509,4 +546,12 @@ const StyledContact = styled.div`
   padding: 1rem;
   background-color: whitesmoke;
   border-radius: .5rem;
+`;
+
+const StyledTotal = styled.span`
+  display: inline-block;
+  margin: .5rem 0 .5rem .75rem;
+  ${forBreakpoint(Breakpoint.TabletLandscape, `
+    margin: 0;
+  `)};
 `;

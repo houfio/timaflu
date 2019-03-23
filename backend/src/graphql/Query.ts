@@ -72,9 +72,10 @@ export const Query = queryType({
       args: {
         search: stringArg({ nullable: true }),
         limit: intArg({ nullable: true }),
-        sold: booleanArg({ nullable: true })
+        sold: booleanArg({ nullable: true }),
+        stock: booleanArg({ nullable: true })
       },
-      resolve: (root, { search = '', limit, sold }, { db }) => execute<Product>(db, `
+      resolve: (root, { search = '', limit, sold, stock }, { db }) => execute<Product>(db, `
         SELECT *
         FROM product p
         WHERE p.name LIKE :search
@@ -83,10 +84,15 @@ export const Query = queryType({
         ` : `
           AND (p.min_stock IS NULL OR p.min_stock = 0)
         ` : ''}
+        ${stock !== undefined ? stock ? `
+          AND p.stock >= p.min_stock
+        ` : `
+          AND p.stock < p.min_stock
+        ` : ''}
         ${limit !== undefined ? `
           LIMIT :limit
         ` : ''}
-      `, { search: `%${search}%`, limit })
+      `, { search: `%${search}%`, limit, stock })
     });
     t.field('manufacturer', {
       type: 'Manufacturer',

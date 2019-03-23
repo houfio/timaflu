@@ -34,6 +34,7 @@ type Product = Identifiable & {
   name: string,
   code: string,
   price: number,
+  sell_price?: number,
   description?: string,
   min_stock?: number,
   stock?: number,
@@ -68,6 +69,7 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
         name
         code
         price
+        sell_price
         description
         min_stock
         stock
@@ -101,8 +103,8 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
     }
   });
 
-  function fallback<T>(value: T, transform: (value: T) => string = (v) => String(v)) {
-    return value !== null ? transform(value) : 'Onbekend';
+  function fallback<T>(value: T | undefined | null, transform: (value: T) => string = (v) => String(v)) {
+    return value !== undefined && value !== null ? transform(value) : 'Onbekend';
   }
 
   return (
@@ -132,7 +134,8 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
                 <Heading type="h2">
                   Informatie
                 </Heading>
-                <span>Prijs: {fallback(data.product.price, priceFormat)}</span>
+                <span>Inkoopprijsprijs: {fallback(data.product.price, priceFormat)}</span>
+                <span>Verkoopprijs: {fallback(data.product.sell_price, priceFormat)}</span>
                 <span>Huidige voorraad: {fallback(data.product.stock)}</span>
                 <span>Minimale voorraad: {fallback(data.product.min_stock)}</span>
                 <span>Gewicht: {fallback(data.product.contents)}</span>

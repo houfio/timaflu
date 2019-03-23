@@ -29,6 +29,7 @@ export type Product = {
   name: string,
   code: string,
   price: number,
+  sell_price?: number,
   description?: string,
   description_short?: string,
   stock?: number,

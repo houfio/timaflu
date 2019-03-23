@@ -43,7 +43,7 @@ type User = Identifiable & {
 type Product = Identifiable & {
   name: string,
   code: string,
-  price: number,
+  sell_price: number,
   stock: number,
   contents: string,
   packaging_amount: number,
@@ -80,7 +80,7 @@ export function CreateOrder() {
   const [products, setProducts] = useState<ProductAmountPair[]>([]);
   const [contact, setContact] = useState<Contact>();
 
-  const subtotal = products.reduce((previous, current) => previous + current.product.price * current.amount, 0);
+  const subtotal = products.reduce((previous, current) => previous + current.product.sell_price * current.amount, 0);
   const total = user ? subtotal * (1 - user.discount / 100) * (1 - (subtotal >= 500 ? .05 : 0)) : subtotal;
 
   const props: StepProps = {
@@ -214,7 +214,7 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
         id
         name
         code
-        price
+        sell_price
         stock
         contents
         packaging_amount
@@ -280,7 +280,7 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
             <StyledDetails>
               <span>Fabrikant: {value.manufacturer.contact.company}</span>
               <span>Inhoud: {value.packaging_amount}x {value.contents}</span>
-              <span>Prijs: {priceFormat(value.price)}</span>
+              <span>Prijs: {priceFormat(value.sell_price)}</span>
             </StyledDetails>
             <Form>
               <StyledInput
@@ -325,7 +325,7 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
             sortable: true
           }, {
             heading: 'Prijs',
-            render: (value, row) => priceFormat(value.price * row.amount),
+            render: (value, row) => priceFormat(value.sell_price * row.amount),
             sortable: true
           }],
           description: [{
@@ -485,7 +485,7 @@ function StepFour({ previousStep, user, products, contact, subtotal, total }: St
             sortable: true
           }, {
             heading: 'Prijs',
-            render: (value, row) => priceFormat(value.price * row.amount),
+            render: (value, row) => priceFormat(value.sell_price * row.amount),
             sortable: true
           }],
           description: [{

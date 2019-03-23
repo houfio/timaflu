@@ -90,6 +90,7 @@ type Product {
   packaging_amount: Int
   packaging_size: Int
   price: Float!
+  sell_price: Float
   sold_since: String
   state: ProductState!
   stock: Int
@@ -110,7 +111,7 @@ type Query {
   order(id: ID!): Order
   orders: [Order!]!
   product(id: ID!): Product
-  products(limit: Int, search: String, sold: Boolean): [Product!]!
+  products(limit: Int, search: String, sold: Boolean, stock: Boolean): [Product!]!
   selfOrder(id: ID!): SelfOrder
   selfOrders: [SelfOrder!]!
   user(id: ID!): User

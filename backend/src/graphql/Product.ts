@@ -23,6 +23,7 @@ export const Product = objectType({
     t.string('name');
     t.string('code');
     t.float('price');
+    t.float('sell_price', { nullable: true });
     t.string('description', { nullable: true });
     t.string('description_short', { nullable: true });
     t.int('stock', { nullable: true });

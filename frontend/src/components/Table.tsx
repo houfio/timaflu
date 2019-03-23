@@ -6,6 +6,7 @@ import React, { ReactNode, useState } from 'react';
 import { Breakpoint, Identifiable } from '../types';
 import { compare } from '../utils/compare';
 import { forBreakpoint } from '../utils/forBreakpoint';
+
 import { Heading } from './Heading';
 
 type Props<T> = {

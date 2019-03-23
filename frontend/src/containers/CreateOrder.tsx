@@ -1,5 +1,5 @@
 import styled from '@emotion/styled/macro';
-import { faCheck, faFolderOpen, faMapMarkerAlt, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faMapMarkerAlt, faShoppingCart, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import { Form, FormikProvider, useFormik } from 'formik';
@@ -108,7 +108,7 @@ export function CreateOrder() {
             )
           },
           {
-            icon: faFolderOpen,
+            icon: faShoppingCart,
             children: (
               <StepTwo {...props}/>
             )

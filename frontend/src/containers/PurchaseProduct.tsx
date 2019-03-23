@@ -1,4 +1,4 @@
-import { faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faIndustry, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 
 import { Content } from '../components/Content';
@@ -11,7 +11,19 @@ export function PurchaseProduct() {
         step={0}
         steps={[
           {
-            icon: faFolderOpen,
+            icon: faShoppingCart,
+            children: (
+              <div/>
+            )
+          },
+          {
+            icon: faIndustry,
+            children: (
+              <div/>
+            )
+          },
+          {
+            icon: faCheck,
             children: (
               <div/>
             )

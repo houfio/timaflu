@@ -10,9 +10,9 @@ import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { PRODUCT_STATES } from '../constants';
 import { useRouter } from '../hooks/useRouter';
-import { Identifiable, ProductState } from '../types';
+import { Breakpoint, Identifiable, ProductState } from '../types';
 import { codeFormat } from '../utils/codeFormat';
-import { compare } from '../utils/compare';
+import { forBreakpoint } from '../utils/forBreakpoint';
 
 type Product = Identifiable & {
   name: string,
@@ -54,8 +54,11 @@ export function Products() {
       {!loading && data ? (
         <>
           <StyledHeader>
-            <Button>
+            <Button onClick={() => history.push('/products/purchase')}>
               Product inkopen
+            </Button>
+            <Button onClick={() => history.push('/products/purchase/history')}>
+              Inkoophistorie
             </Button>
           </StyledHeader>
           <Table<Product>
@@ -101,7 +104,17 @@ export function Products() {
 
 const StyledHeader = styled.div`
   display: flex;
+  flex-direction: column;
   margin-bottom: 1rem;
+  ${forBreakpoint(Breakpoint.TabletPortrait, `
+    flex-direction: row;
+  `)};
+  > * + * {
+    margin: 1rem 0 0 0;
+    ${forBreakpoint(Breakpoint.TabletPortrait, `
+      margin: 0 0 0 1rem;
+    `)};
+  }
 `;
 
 const StyledStock = styled(FontAwesomeIcon)`

@@ -1,6 +1,6 @@
 import { arg, booleanArg, idArg, intArg, queryType, stringArg } from 'yoga';
 
-import { Manufacturer, Order, Product, User } from '../context';
+import { Manufacturer, Order, Product, SelfOrder, User } from '../context';
 import { execute } from '../utils/execute';
 
 export const Query = queryType({
@@ -108,20 +108,30 @@ export const Query = queryType({
     t.list.field('manufacturers', {
       type: 'Manufacturer',
       args: {
+        search: stringArg({ nullable: true }),
+        limit: intArg({ nullable: true }),
         product: idArg({ nullable: true })
       },
-      resolve: (root, { product }, { db }) => execute<Manufacturer>(db, `
+      resolve: (root, { search = '', limit, product }, { db }) => execute<Manufacturer>(db, `
         SELECT *
         FROM manufacturer m
+        WHERE (
+          SELECT c.company
+          FROM contact c
+          WHERE m.contact_id = c.id
+        ) LIKE :search
         ${product ? `
-          WHERE m.id IN (
+          AND m.id IN (
             SELECT p.manufacturer_id
             FROM product p
               JOIN product m ON m.id = :product
             WHERE p.name = m.name
           )
         ` : ''}
-      `, { product })
+        ${limit !== undefined ? `
+          LIMIT :limit
+        ` : ''}
+      `, { search: `%${search}%`, limit, product })
     });
     t.field('order', {
       type: 'Order',
@@ -145,6 +155,30 @@ export const Query = queryType({
       resolve: (root, args, { db }) => execute<Order>(db, `
         SELECT *
         FROM \`order\`
+      `)
+    });
+    t.field('selfOrder', {
+      type: 'SelfOrder',
+      nullable: true,
+      args: {
+        id: idArg()
+      },
+      resolve: async (root, { id }, { db }) => {
+        const query = `
+          SELECT *
+          FROM self_order o
+          WHERE o.id = :id
+        `;
+        const result = await execute<SelfOrder>(db, query, { id });
+
+        return result.length ? result[0] : undefined!;
+      }
+    });
+    t.list.field('selfOrders', {
+      type: 'SelfOrder',
+      resolve: (root, args, { db }) => execute<SelfOrder>(db, `
+        SELECT *
+        FROM self_order
       `)
     });
   }

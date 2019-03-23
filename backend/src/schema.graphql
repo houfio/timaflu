@@ -106,11 +106,13 @@ enum ProductState {
 
 type Query {
   manufacturer(id: ID!): Manufacturer
-  manufacturers(product: ID): [Manufacturer!]!
+  manufacturers(limit: Int, product: ID, search: String): [Manufacturer!]!
   order(id: ID!): Order
   orders: [Order!]!
   product(id: ID!): Product
   products(limit: Int, search: String, sold: Boolean): [Product!]!
+  selfOrder(id: ID!): SelfOrder
+  selfOrders: [SelfOrder!]!
   user(id: ID!): User
   users(limit: Int, role: UserRole, search: String): [User!]!
 }
@@ -120,7 +122,23 @@ type Robot {
   id: ID!
 }
 
+type SelfOrder {
+  date: String!
+  id: ID!
+  lines: [SelfOrderLine!]!
+  received: Boolean!
+}
+
+type SelfOrderLine {
+  amount: Int!
+  id: ID!
+  order: SelfOrder!
+  product: Product!
+  total: Float!
+}
+
 type Substance {
+  amount: String!
   id: ID!
   name: String!
 }

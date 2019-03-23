@@ -16,7 +16,7 @@ export function Input({ name, ...props }: Props & HTMLProps<HTMLInputElement>) {
 
 const StyledInput = styled.input`
   width: 100%;
-  min-width: 15rem;
+  min-width: 12rem;
   padding: .5rem .75rem;
   border: none;
   border-radius: .5rem;

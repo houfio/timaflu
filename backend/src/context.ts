@@ -44,7 +44,9 @@ export type Product = {
 
 export type Substance = {
   id: number,
-  name: string
+  product_id: number,
+  substance_id: number,
+  quantity: string
 };
 
 export type Manufacturer = {
@@ -94,6 +96,20 @@ export type Robot = {
 export type Bin = {
   id: number,
   code: string
+};
+
+export type SelfOrder = {
+  id: number,
+  date: string,
+  received: boolean
+};
+
+export type SelfOrderLine = {
+  id: number,
+  product_id: number,
+  self_order_id: number,
+  amount: number,
+  total: number
 };
 
 export default () => {

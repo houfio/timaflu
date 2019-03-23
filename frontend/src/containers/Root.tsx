@@ -15,6 +15,8 @@ import { Order } from './Order';
 import { Orders } from './Orders';
 import { Product } from './Product';
 import { Products } from './Products';
+import { PurchaseHistory } from './PurchaseHistory';
+import { PurchaseProduct } from './PurchaseProduct';
 
 export function Root() {
   return (
@@ -51,6 +53,8 @@ export function Root() {
           <Route path="/customers" exact={true} component={Customers}/>
           <Route path="/customers/:id" exact={true} component={Customer}/>
           <Route path="/products" exact={true} component={Products}/>
+          <Route path="/products/purchase" exact={true} component={PurchaseProduct}/>
+          <Route path="/products/purchase/history" exact={true} component={PurchaseHistory}/>
           <Route path="/products/:id" exact={true} component={Product}/>
           <Route path="/manufacturers" exact={true} component={Manufacturers}/>
           <Route path="/manufacturers/:id" exact={true} component={Manufacturer}/>

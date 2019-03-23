@@ -38,12 +38,8 @@ export const Product = objectType({
       type: 'Substance',
       resolve: ({ id }, args, { db }) => execute(db, `
         SELECT *
-        FROM substance s
-        WHERE s.id IN (
-          SELECT p.substance_id
-          FROM product_substance p
-          WHERE p.product_id = :id
-        )
+        FROM product_substance s
+        WHERE s.product_id = :id
       `, { id })
     });
     t.field('state', {

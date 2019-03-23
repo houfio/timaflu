@@ -47,6 +47,7 @@ type Product = Identifiable & {
   stock: number,
   contents: string,
   packaging_amount: number,
+  min_order: number,
   manufacturer: {
     contact: {
       company: string
@@ -217,6 +218,7 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
         stock
         contents
         packaging_amount
+        min_order
         manufacturer {
           contact {
             company
@@ -232,7 +234,7 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
   const formik = useFormik<Values>({
     initialValues: {
       description: '',
-      amount: '1'
+      amount: ''
     },
     onSubmit: ({ description, amount }, { resetForm }) => {
       if (!product) {
@@ -281,7 +283,15 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
               <span>Prijs: {priceFormat(value.price)}</span>
             </StyledDetails>
             <Form>
-              <StyledInput name="amount" type="number" min="1" max={value.stock} margin={true}/>
+              <StyledInput
+                name="amount"
+                placeholder="Aantal"
+                type="number"
+                min={value.min_order}
+                max={value.stock}
+                required={true}
+                margin={true}
+              />
               <StyledInput name="description" placeholder="Extra notitie" margin={true}/>
               <Button type="submit">
                 Toevoegen

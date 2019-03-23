@@ -7,8 +7,8 @@ import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
-import { compare } from '../utils/compare';
 import { codeFormat } from '../utils/codeFormat';
+import { compare } from '../utils/compare';
 
 type Manufacturers = Identifiable & {
   id: number,

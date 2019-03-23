@@ -70,7 +70,6 @@ export const Order = objectType({
             JOIN invoice i ON o.id = i.order_id
           GROUP BY o.id
           HAVING o.id = :id
-          LIMIT 1;
         `;
         const result = await execute<{ total: number }>(db, query, { id });
 

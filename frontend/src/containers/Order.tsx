@@ -14,7 +14,8 @@ import { Heading } from '../components/Heading';
 import { Loading } from '../components/Loading';
 import { Row } from '../components/Row';
 import { Table } from '../components/Table';
-import { Breakpoint, Identifiable } from '../types';
+import { INVOICE_STATES } from '../constants';
+import { Breakpoint, Identifiable, InvoiceState } from '../types';
 import { codeFormat } from '../utils/codeFormat';
 import { priceFormat } from '../utils/priceFormat';
 import { truncate } from '../utils/truncate';
@@ -33,6 +34,13 @@ type OrderLine = Identifiable & {
   }
 };
 
+type Invoice = Identifiable & {
+  state: InvoiceState,
+  description?: string,
+  date: string,
+  lines: Identifiable[]
+};
+
 type Contact = {
   company: string,
   first_name: string,
@@ -47,6 +55,7 @@ type Order = Identifiable & {
   description?: string,
   date: string,
   lines: OrderLine[],
+  invoices: Invoice[],
   user: {
     contact: Contact
   },
@@ -70,6 +79,15 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
           product {
             name
             code
+          }
+        }
+        invoices {
+          id
+          state
+          description
+          date
+          lines {
+            id
           }
         }
         user {
@@ -165,6 +183,38 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
                 render: priceFormat
               }]
             }}
+            heading="Producten"
+          />
+          <StyledSpacer/>
+          <Table<Invoice>
+            rows={data.order.invoices}
+            columns={{
+              state: [{
+                heading: 'Status',
+                render: (value) => {
+                  const { name, color, icon } = INVOICE_STATES[value];
+
+                  return (
+                    <>
+                      <StyledState icon={icon} color={color} fixedWidth={true}/>
+                      {name}
+                    </>
+                  );
+                }
+              }],
+              description: [{
+                heading: 'Beschrijving'
+              }],
+              date: [{
+                heading: 'Datum',
+                render: (value) => format(Number(value), 'PPPP', { locale: nl })
+              }],
+              lines: [{
+                heading: 'Aantal producten',
+                render: (value) => value.length
+              }]
+            }}
+            heading="Facturen"
           />
         </>
       ) : (
@@ -192,4 +242,12 @@ const StyledContact = styled.div`
   padding: 1rem;
   background-color: whitesmoke;
   border-radius: .5rem;
+`;
+
+const StyledState = styled(FontAwesomeIcon)`
+  margin-right: .5rem;
+`;
+
+const StyledSpacer = styled.div`
+  height: 1rem;
 `;

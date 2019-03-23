@@ -6,21 +6,23 @@ import React, { ReactNode, useState } from 'react';
 import { Breakpoint, Identifiable } from '../types';
 import { compare } from '../utils/compare';
 import { forBreakpoint } from '../utils/forBreakpoint';
+import { Heading } from './Heading';
 
 type Props<T> = {
   rows: T[],
   columns: {
     [K in keyof T]?: Array<{
       heading: string,
-      render?: (value: T[K], row: T) => ReactNode | undefined,
+      render?: (value: T[K], row: T) => ReactNode,
       sortable?: boolean,
       order?: number
     }>
   },
+  heading?: ReactNode,
   onClick?: (row: T) => void
 };
 
-export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<T>) {
+export function Table<T extends Identifiable>({ rows, columns, heading, onClick }: Props<T>) {
   const [sort, setSort] = useState<{ key: keyof T, index: number, reverse: boolean }>();
 
   const columnKeys = Object.keys(columns) as Array<keyof T>;
@@ -44,6 +46,11 @@ export function Table<T extends Identifiable>({ rows, columns, onClick }: Props<
 
   return (
     <StyledWrapper>
+      {heading && (
+        <Heading type="h2">
+          {heading}
+        </Heading>
+      )}
       <StyledTable>
         <StyledHead>
           <StyledRow clickable={false}>

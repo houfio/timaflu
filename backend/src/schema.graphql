@@ -114,10 +114,17 @@ type Query {
   orders: [Order!]!
   product(id: ID!): Product
   products(limit: Int, search: String, sold: Boolean, stock: Boolean): [Product!]!
+  queue: [QueueLine!]!
   selfOrder(id: ID!): SelfOrder
   selfOrders: [SelfOrder!]!
   user(id: ID!): User
   users(limit: Int, role: UserRole, search: String): [User!]!
+}
+
+type QueueLine {
+  bins: [Bin!]!
+  id: ID!
+  user: User!
 }
 
 type Robot {

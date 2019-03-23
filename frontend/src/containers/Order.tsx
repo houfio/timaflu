@@ -37,7 +37,6 @@ type OrderLine = Identifiable & {
 
 type Invoice = Identifiable & {
   state: InvoiceState,
-  tax: number,
   date: string,
   lines: Identifiable[]
 };
@@ -87,7 +86,6 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
         invoices {
           id
           state
-          tax
           date
           lines {
             id
@@ -197,7 +195,8 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
           <StyledSpacer/>
           {data.order.days_left <= 0 && (
             <StyledWarning>
-              De betaalperiode voor één of meer van de facturen is verstreken. Telefoonnummer: {data.order.contact.telephone}
+              De betaalperiode van één of meer van de facturen is verstreken.
+              Telefoonnummer: {data.order.contact.telephone}
             </StyledWarning>
           )}
           <Table<Invoice>
@@ -216,14 +215,13 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
                   );
                 }
               }],
+              id: [{
+                heading: 'Code',
+                render: codeFormat
+              }],
               date: [{
                 heading: 'Datum',
                 render: (value) => format(Number(value), 'PPPP', { locale: nl }),
-                sortable: true
-              }],
-              tax: [{
-                heading: 'BTW',
-                render: (value) => `${value}%`,
                 sortable: true
               }],
               lines: [{

@@ -113,6 +113,10 @@ export type SelfOrderLine = {
   total: number
 };
 
+export type QueueLine = {
+  id: number
+};
+
 export default () => {
   const db = createConnection({
     host: 'databases.aii.avans.nl',

@@ -1,6 +1,6 @@
 import { arg, booleanArg, idArg, intArg, queryType, stringArg } from 'yoga';
 
-import { Manufacturer, Order, Product, SelfOrder, User } from '../context';
+import { Manufacturer, Order, Product, QueueLine, SelfOrder, User } from '../context';
 import { execute } from '../utils/execute';
 
 export const Query = queryType({
@@ -192,6 +192,14 @@ export const Query = queryType({
       resolve: (root, args, { db }) => execute<SelfOrder>(db, `
         SELECT *
         FROM self_order
+      `)
+    });
+    t.list.field('queue', {
+      type: 'QueueLine',
+      resolve: (root, args, { db }) => execute<QueueLine>(db, `
+        SELECT i.id
+        FROM invoice i
+        WHERE i.state = 2
       `)
     });
   }

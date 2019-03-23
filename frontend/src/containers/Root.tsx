@@ -12,6 +12,7 @@ import { Manufacturer } from './Manufacturer';
 import { Manufacturers } from './Manufacturers';
 import { NotFound } from './NotFound';
 import { Order } from './Order';
+import { OrderQueue } from './OrderQueue';
 import { Orders } from './Orders';
 import { Product } from './Product';
 import { Products } from './Products';
@@ -49,6 +50,7 @@ export function Root() {
           <Route path="/" exact={true} component={Dashboard}/>
           <Route path="/orders" exact={true} component={Orders}/>
           <Route path="/orders/create" exact={true} component={CreateOrder}/>
+          <Route path="/orders/queue" exact={true} component={OrderQueue}/>
           <Route path="/orders/:id" exact={true} component={Order}/>
           <Route path="/customers" exact={true} component={Customers}/>
           <Route path="/customers/:id" exact={true} component={Customer}/>

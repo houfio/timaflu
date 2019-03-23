@@ -44,7 +44,6 @@ type Product = Identifiable & {
   name: string,
   code: string,
   sell_price: number,
-  stock: number,
   contents: string,
   packaging_amount: number,
   min_order: number,
@@ -216,7 +215,6 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
         name
         code
         sell_price
-        stock
         contents
         packaging_amount
         min_order
@@ -289,7 +287,6 @@ function StepTwo({ previousStep, nextStep, products, setProducts, subtotal, tota
                 placeholder="Aantal"
                 type="number"
                 min={value.min_order}
-                max={value.stock}
                 required={true}
                 margin={true}
               />

@@ -11,10 +11,11 @@ import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { INVOICE_STATES } from '../constants';
 import { useRouter } from '../hooks/useRouter';
-import { Identifiable, InvoiceState } from '../types';
+import { Breakpoint, Identifiable, InvoiceState } from '../types';
 import { codeFormat } from '../utils/codeFormat';
 import { priceFormat } from '../utils/priceFormat';
 import { truncate } from '../utils/truncate';
+import { forBreakpoint } from '../utils/forBreakpoint';
 
 type Order = Identifiable & {
   date: string,
@@ -53,6 +54,9 @@ export function Orders() {
           <StyledHeader>
             <Button onClick={() => history.push('/orders/create')}>
               Bestelling aanmaken
+            </Button>
+            <Button onClick={() => history.push('/orders/queue')}>
+              Wachtrij
             </Button>
           </StyledHeader>
           <Table<Order>
@@ -107,7 +111,17 @@ export function Orders() {
 
 const StyledHeader = styled.div`
   display: flex;
+  flex-direction: column;
   margin-bottom: 1rem;
+  ${forBreakpoint(Breakpoint.TabletPortrait, `
+    flex-direction: row;
+  `)};
+  > * + * {
+    margin: 1rem 0 0 0;
+    ${forBreakpoint(Breakpoint.TabletPortrait, `
+      margin: 0 0 0 1rem;
+    `)};
+  }
 `;
 
 const StyledState = styled(FontAwesomeIcon)`

@@ -74,10 +74,10 @@ export function Table<T extends Identifiable>({ rows, columns, heading, onClick 
           </StyledRow>
         </StyledHead>
         <tbody>
-          {[...rows || []]
+          {[...rows]
             .sort((a, b) => {
               if (!sort || !columns[sort.key] || !columns[sort.key]![sort.index]) {
-                return compare(a.id, b.id);
+                return compare(b.id, a.id);
               }
 
               const column = columns[sort.key]![sort.index];

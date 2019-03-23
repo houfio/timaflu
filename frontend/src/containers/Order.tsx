@@ -166,21 +166,25 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
             columns={{
               product: [{
                 heading: 'Product',
-                render: (value) => value.name
+                render: (value) => value.name,
+                sortable: true
               }, {
                 heading: 'Code',
                 render: (value) => codeFormat(value.code),
+                sortable: true
               }],
               description: [{
                 heading: 'Beschrijving',
                 render: (value) => value ? truncate(value, 20) : undefined
               }],
               amount: [{
-                heading: 'Aantal'
+                heading: 'Aantal',
+                sortable: true
               }],
               total: [{
                 heading: 'Totaal',
-                render: priceFormat
+                render: priceFormat,
+                sortable: true
               }]
             }}
             heading="Producten"
@@ -202,16 +206,18 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
                   );
                 }
               }],
+              date: [{
+                heading: 'Datum',
+                render: (value) => format(Number(value), 'PPPP', { locale: nl }),
+                sortable: true
+              }],
               description: [{
                 heading: 'Beschrijving'
               }],
-              date: [{
-                heading: 'Datum',
-                render: (value) => format(Number(value), 'PPPP', { locale: nl })
-              }],
               lines: [{
                 heading: 'Aantal producten',
-                render: (value) => value.length
+                render: (value) => value.length,
+                sortable: true
               }]
             }}
             heading="Facturen"

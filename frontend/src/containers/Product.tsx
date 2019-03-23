@@ -101,7 +101,9 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
     }
   });
 
-  const fallback = (value: unknown) => value !== null ? value : 'Onbekend';
+  function fallback<T>(value: T, transform: (value: T) => string = (v) => String(v)) {
+    return value !== null ? transform(value) : 'Onbekend';
+  }
 
   return (
     <Content title="Product">
@@ -130,9 +132,9 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
                 <Heading type="h2">
                   Informatie
                 </Heading>
-                <span>Prijs: {data.product.price ? priceFormat(data.product.price) : 'Onbekend'}</span>
-                <span>Huidige voorraad: {data.product.stock || 0}</span>
-                <span>Minimale voorraad: {data.product.min_stock || 0}</span>
+                <span>Prijs: {fallback(data.product.price, priceFormat)}</span>
+                <span>Huidige voorraad: {fallback(data.product.stock)}</span>
+                <span>Minimale voorraad: {fallback(data.product.min_stock)}</span>
                 <span>Gewicht: {fallback(data.product.contents)}</span>
                 <span>Verpakking: {fallback(data.product.packaging)}</span>
                 <span>Hoeveelheid: {fallback(data.product.packaging_amount)}</span>
@@ -145,8 +147,8 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
                   Fabrikant
                 </Heading>
                 <span>{data.product.manufacturer.contact.company}</span>
-                <span>{data.product.manufacturer.contact.address}, {data.product.manufacturer.contact.city}</span>
-                <span>{data.product.manufacturer.contact.postal_code}</span>
+                <span>{data.product.manufacturer.contact.address}</span>
+                <span>{data.product.manufacturer.contact.postal_code} {data.product.manufacturer.contact.city}</span>
                 <span>{data.product.manufacturer.contact.country}</span>
                 <span>{data.product.manufacturer.contact.telephone}</span>
                 <StyledWebsite>

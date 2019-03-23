@@ -24,7 +24,6 @@ export const Invoice = objectType({
       type: 'InvoiceState'
     });
     t.int('tax');
-    t.string('description', { nullable: true });
     t.string('date');
     t.list.field('lines', {
       type: 'InvoiceLine',

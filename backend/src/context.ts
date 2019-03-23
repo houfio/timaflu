@@ -83,7 +83,6 @@ export type Invoice = {
   order_id: number,
   state: number,
   tax: number,
-  description?: string,
   date: string
 };
 

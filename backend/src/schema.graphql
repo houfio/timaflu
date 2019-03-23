@@ -22,7 +22,6 @@ type Contact {
 
 type Invoice {
   date: String!
-  description: String
   id: ID!
   lines: [InvoiceLine!]!
   order: Order!

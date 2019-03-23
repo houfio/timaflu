@@ -36,7 +36,7 @@ type OrderLine = Identifiable & {
 
 type Invoice = Identifiable & {
   state: InvoiceState,
-  description?: string,
+  tax: number,
   date: string,
   lines: Identifiable[]
 };
@@ -84,7 +84,7 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
         invoices {
           id
           state
-          description
+          tax
           date
           lines {
             id
@@ -211,8 +211,10 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
                 render: (value) => format(Number(value), 'PPPP', { locale: nl }),
                 sortable: true
               }],
-              description: [{
-                heading: 'Beschrijving'
+              tax: [{
+                heading: 'BTW',
+                render: (value) => `${value}%`,
+                sortable: true
               }],
               lines: [{
                 heading: 'Aantal producten',

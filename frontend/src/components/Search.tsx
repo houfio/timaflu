@@ -4,7 +4,6 @@ import React, { ReactNode } from 'react';
 
 import { Breakpoint, Identifiable } from '../types';
 import { forBreakpoint } from '../utils/forBreakpoint';
-import { truncate } from '../utils/truncate';
 
 import { Input } from './Input';
 import { Loading } from './Loading';
@@ -14,7 +13,7 @@ type Props<T> = {
   value?: T,
   onChange: (value: T) => void,
   options?: T[],
-  renderLine: (value: T) => string,
+  renderLine: (value: T) => ReactNode,
   render: (value: T) => ReactNode
 };
 
@@ -37,7 +36,7 @@ export function Search<T extends Identifiable>({ onSearch, value, onChange, opti
         <StyledBox>
           <StyledLeft>
             <Form>
-              <Input name="search"/>
+              <Input name="search" placeholder="Zoeken"/>
               <StyledResults>
                 {options ? options.map((option) => (
                   <StyledResult
@@ -46,7 +45,7 @@ export function Search<T extends Identifiable>({ onSearch, value, onChange, opti
                     active={value && option.id === value.id}
                     type="button"
                   >
-                    {truncate(renderLine(option), 20)}
+                    {renderLine(option)}
                   </StyledResult>
                 )) : (
                   <Loading/>

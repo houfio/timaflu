@@ -50,6 +50,7 @@ enum InvoiceState {
 type Manufacturer {
   contact: Contact!
   id: ID!
+  product(name: String!): Product
   products: [Product!]!
 }
 
@@ -107,7 +108,7 @@ enum ProductState {
 
 type Query {
   manufacturer(id: ID!): Manufacturer
-  manufacturers(limit: Int, product: ID, search: String): [Manufacturer!]!
+  manufacturers(limit: Int, product: String, search: String): [Manufacturer!]!
   order(id: ID!): Order
   orders: [Order!]!
   product(id: ID!): Product

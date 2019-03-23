@@ -78,7 +78,15 @@ export const Query = queryType({
       resolve: (root, { search = '', limit, sold, stock }, { db }) => execute<Product>(db, `
         SELECT *
         FROM product p
-        WHERE p.name LIKE :search
+        WHERE (
+          p.name LIKE :search
+          OR p.manufacturer_id IN (
+            SELECT m.id
+            FROM manufacturer m
+              JOIN contact c ON m.contact_id = c.id
+            WHERE c.company LIKE :search
+          )
+        )
         ${sold !== undefined ? sold ? `
           AND p.min_stock > 0
         ` : `
@@ -116,7 +124,7 @@ export const Query = queryType({
       args: {
         search: stringArg({ nullable: true }),
         limit: intArg({ nullable: true }),
-        product: idArg({ nullable: true })
+        product: stringArg({ nullable: true })
       },
       resolve: (root, { search = '', limit, product }, { db }) => execute<Manufacturer>(db, `
         SELECT *
@@ -130,8 +138,7 @@ export const Query = queryType({
           AND m.id IN (
             SELECT p.manufacturer_id
             FROM product p
-              JOIN product m ON m.id = :product
-            WHERE p.name = m.name
+            WHERE p.name = :product
           )
         ` : ''}
         ${limit !== undefined ? `

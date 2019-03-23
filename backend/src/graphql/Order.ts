@@ -63,11 +63,10 @@ export const Order = objectType({
     t.float('total', {
       resolve: async ({ id }, args, { db }) => {
         const query = `
-          SELECT round(sum(l.total * (1 - o.discount / 100) * (1 + i.tax / 100)), 2) total
+          SELECT round(sum(l.total * (1 - o.discount / 100)), 2) total
           FROM \`order\` o
             JOIN user_billing u ON o.billing_id = u.id
             JOIN order_line l ON o.id = l.order_id
-            JOIN invoice i ON o.id = i.order_id
           GROUP BY o.id
           HAVING o.id = :id
         `;
@@ -87,7 +86,7 @@ export const Order = objectType({
         `;
         const result = await execute<{ state: number }>(db, query, { id });
 
-        return result[0].state;
+        return result.length ? result[0].state : 0;
       }
     });
   }

@@ -1,4 +1,4 @@
-import { objectType } from 'yoga';
+import { objectType, stringArg } from 'yoga';
 
 import { Contact, Product } from '../context';
 import { execute } from '../utils/execute';
@@ -18,6 +18,24 @@ export const Manufacturer = objectType({
         const result = await execute<Contact>(db, query, { contact_id });
 
         return result[0];
+      }
+    });
+    t.field('product', {
+      type: 'Product',
+      nullable: true,
+      args: {
+        name: stringArg()
+      },
+      resolve: async ({ id }, { name }, { db }) => {
+        const query = `
+          SELECT *
+          FROM product p
+          WHERE p.manufacturer_id = :id
+            AND p.name = :name
+        `;
+        const result = await execute<Product>(db, query, { id, name });
+
+        return result.length ? result[0] : undefined!;
       }
     });
     t.list.field('products', {

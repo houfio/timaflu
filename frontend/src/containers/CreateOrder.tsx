@@ -170,16 +170,17 @@ function StepOne({ nextStep, user, setUser }: StepProps) {
         value={user}
         onChange={setUser}
         options={!loading ? data && data.users : undefined}
-        renderLine={(value) => `${value.contact.first_name} ${value.contact.last_name}`}
+        renderLine={(value) => truncate(value.contact.company, 20)}
         render={(value) => (
           <>
             <Heading type="h2">
               {value.contact.company}
             </Heading>
             <Heading type="h3">
-              {value.contact.first_name} {value.contact.last_name}
+              {codeFormat(value.id)}
             </Heading>
             <StyledDetails>
+              <span>{value.contact.first_name} {value.contact.last_name}</span>
               <span>{value.contact.address}</span>
               <span>{value.contact.postal_code} {value.contact.city}</span>
               <span>{value.contact.country}</span>

@@ -10,6 +10,7 @@ import { Content } from '../components/Content';
 import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { Identifiable } from '../types';
+import { codeFormat } from '../utils/codeFormat';
 import { priceFormat } from '../utils/priceFormat';
 
 type SelfOrder = Identifiable & {
@@ -44,15 +45,19 @@ export function PurchaseHistory() {
         <Table<SelfOrder>
           rows={data.selfOrders}
           columns={{
-            date: [{
-              heading: 'Datum',
-              render: (value) => format(Number(value), 'PPPP', { locale: nl })
-            }],
             received: [{
               heading: 'Ontvangen',
               render: (value) => (
                 <FontAwesomeIcon icon={value ? faCheck : faTimes} color="#24292e" fixedWidth={true}/>
               )
+            }],
+            id: [{
+              heading: 'Code',
+              render: (value) => codeFormat(value)
+            }],
+            date: [{
+              heading: 'Datum',
+              render: (value) => format(Number(value), 'PPPP', { locale: nl })
             }],
             lines: [{
               heading: 'Aantal producten',

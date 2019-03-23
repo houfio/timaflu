@@ -40,10 +40,10 @@ export class Content extends Component<Props> {
         {error ? (
           <StyledError>
             <Heading type="h1">
-              Oh no
+              Oh nee
             </Heading>
             <Heading type="h3">
-              {error.message}
+              Er is iets mis gegaan
             </Heading>
           </StyledError>
         ) : (

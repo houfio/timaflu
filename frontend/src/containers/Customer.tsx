@@ -1,8 +1,9 @@
 import styled from '@emotion/styled/macro';
 import { faCoins } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import React from 'react';
-import { useQuery } from 'react-apollo-hooks';
+import { Query } from 'react-apollo';
 import { Redirect, RouteComponentProps } from 'react-router';
 
 import { Content } from '../components/Content';
@@ -15,7 +16,6 @@ import { Identifiable, InvoiceState } from '../types';
 import { codeFormat } from '../utils/codeFormat';
 import { priceFormat } from '../utils/priceFormat';
 import { truncate } from '../utils/truncate';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type Params = {
   id: string
@@ -46,115 +46,119 @@ type User = Identifiable & {
   orders: Order[]
 };
 
-export function Customer({ match: { params: { id } } }: RouteComponentProps<Params>) {
-  const { history } = useRouter();
-  const { loading, data } = useQuery<{
-    user: User
-  }>(gql`
-    query Customer($id: ID!) {
-      user(id: $id) {
+const query = gql`
+  query Customer($id: ID!) {
+    user(id: $id) {
+      id
+      contact {
+        company
+        first_name
+        last_name
+        address
+        postal_code
+        city
+        country
+        telephone
+      }
+      orders {
         id
         contact {
           company
-          first_name
-          last_name
-          address
-          postal_code
-          city
-          country
-          telephone
         }
-        orders {
-          id
-          contact {
-            company
-          }
-          description
-          total
-          state
-          days_left
-        }
+        description
+        total
+        state
+        days_left
       }
     }
-  `, {
-    variables: {
-      id
-    }
-  });
+  }
+`;
+
+export function Customer({ match: { params: { id } } }: RouteComponentProps<Params>) {
+  const { history } = useRouter();
 
   return (
-    <Content title="Klant">
-      {!loading && data ? data.user ? (
-        <>
-          <Heading type="h1">
-            {data.user.contact.company}
-          </Heading>
-          <Heading type="h3">
-            Klant {codeFormat(data.user.id)}
-          </Heading>
-          <StyledDescription>
-            Contactpersoon: {data.user.contact.first_name} {data.user.contact.last_name}
-          </StyledDescription>
-          <StyledBox>
-            <Heading type="h2">
-              Informatie
-            </Heading>
-            <span>{data.user.contact.company}</span>
-            <span>{data.user.contact.address}</span>
-            <span>{data.user.contact.postal_code} {data.user.contact.city}</span>
-            <span>{data.user.contact.country}</span>
-            <span>{data.user.contact.telephone}</span>
-          </StyledBox>
-          <Table<Order>
-            rows={data.user.orders}
-            columns={{
-              state: [{
-                heading: 'Status',
-                render: (value, row) => {
-                  const { name, color, icon } = INVOICE_STATES[value];
+    <Query<{ user: User }>
+      query={query}
+      variables={{
+        id
+      }}
+    >
+      {({ loading, data }) => (
+        <Content title="Klant">
+          {!loading && data ? data.user ? (
+            <>
+              <Heading type="h1">
+                {data.user.contact.company}
+              </Heading>
+              <Heading type="h3">
+                Klant {codeFormat(data.user.id)}
+              </Heading>
+              <StyledDescription>
+                Contactpersoon: {data.user.contact.first_name} {data.user.contact.last_name}
+              </StyledDescription>
+              <StyledBox>
+                <Heading type="h2">
+                  Informatie
+                </Heading>
+                <span>{data.user.contact.company}</span>
+                <span>{data.user.contact.address}</span>
+                <span>{data.user.contact.postal_code} {data.user.contact.city}</span>
+                <span>{data.user.contact.country}</span>
+                <span>{data.user.contact.telephone}</span>
+              </StyledBox>
+              <Table<Order>
+                rows={data.user.orders}
+                columns={{
+                  state: [{
+                    heading: 'Status',
+                    render: (value, row) => {
+                      const { name, color, icon } = INVOICE_STATES[value];
 
-                  return (
-                    <>
-                      <StyledState
-                        icon={row.days_left <= 0 ? faCoins : icon}
-                        color={row.days_left <= 0 ? 'red' : color}
-                        fixedWidth={true}
-                      />
-                      {name}
-                    </>
-                  );
-                }
-              }],
-              id: [{
-                heading: 'Code',
-                render: codeFormat,
-                sortable: true
-              }],
-              contact: [{
-                heading: 'Klant',
-                render: (value) => value.company,
-                sortable: true
-              }],
-              description: [{
-                heading: 'Beschrijving',
-                render: (value) => value ? truncate(value, 20) : undefined
-              }],
-              total: [{
-                heading: 'Prijs',
-                render: priceFormat,
-                sortable: true
-              }]
-            }}
-            heading="Bestellingen"
-            onClick={({ id: i }) => history.push(`/orders/${i}`)}
-          />
-        </>
-      ) : (
-        <Redirect to="/customers"/>
-      ) : (
-        <Loading/>
+                      return (
+                        <>
+                          <StyledState
+                            icon={row.days_left <= 0 ? faCoins : icon}
+                            color={row.days_left <= 0 ? 'red' : color}
+                            fixedWidth={true}
+                          />
+                          {name}
+                        </>
+                      );
+                    }
+                  }],
+                  id: [{
+                    heading: 'Code',
+                    render: codeFormat,
+                    sortable: true
+                  }],
+                  contact: [{
+                    heading: 'Klant',
+                    render: (value) => value.company,
+                    sortable: true
+                  }],
+                  description: [{
+                    heading: 'Beschrijving',
+                    render: (value) => value ? truncate(value, 20) : undefined
+                  }],
+                  total: [{
+                    heading: 'Prijs',
+                    render: priceFormat,
+                    sortable: true
+                  }]
+                }}
+                heading="Bestellingen"
+                onClick={({ id: i }) => history.push(`/orders/${i}`)}
+              />
+            </>
+          ) : (
+            <Redirect to="/customers"/>
+          ) : (
+            <Loading/>
+          )}
+        </Content>
       )}
-    </Content>
+    </Query>
   );
 }
 

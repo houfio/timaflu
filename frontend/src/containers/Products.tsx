@@ -2,7 +2,7 @@ import styled from '@emotion/styled/macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import React from 'react';
-import { useQuery } from 'react-apollo-hooks';
+import { Query } from 'react-apollo';
 
 import { Button } from '../components/Button';
 import { Content } from '../components/Content';
@@ -27,78 +27,81 @@ type Product = Identifiable & {
   state: ProductState
 };
 
+const query = gql`
+  query Products {
+    products {
+      id
+      name
+      code
+      stock
+      min_stock
+      manufacturer {
+        contact {
+          company
+        }
+      }
+      state
+    }
+  }
+`;
+
 export function Products() {
   const { history } = useRouter();
-  const { loading, data } = useQuery<{
-    products: Product[]
-  }>(gql`
-    query Products {
-      products {
-        id
-        name
-        code
-        stock
-        min_stock
-        manufacturer {
-          contact {
-            company
-          }
-        }
-        state
-      }
-    }
-  `);
 
   return (
-    <Content title="Producten">
-      {!loading && data ? (
-        <>
-          <StyledHeader>
-            <Button onClick={() => history.push('/products/purchase')}>
-              Product inkopen
-            </Button>
-            <Button onClick={() => history.push('/products/purchase/history')}>
-              Inkoophistorie
-            </Button>
-          </StyledHeader>
-          <Table<Product>
-            rows={data.products}
-            columns={{
-              state: [{
-                heading: 'Voorraad',
-                render: (value, { stock, min_stock }) => {
-                  const { icon, color } = PRODUCT_STATES[value];
+    <Query<{ products: Product[] }> query={query}>
+      {({ loading, data }) => (
+        <Content title="Producten">
+          {!loading && data ? (
+            <>
+              <StyledHeader>
+                <Button onClick={() => history.push('/products/purchase')}>
+                  Product inkopen
+                </Button>
+                <Button onClick={() => history.push('/products/purchase/history')}>
+                  Inkoophistorie
+                </Button>
+              </StyledHeader>
+              <Table<Product>
+                rows={data.products}
+                columns={{
+                  state: [{
+                    heading: 'Voorraad',
+                    render: (value, { stock, min_stock }) => {
+                      const { icon, color } = PRODUCT_STATES[value];
 
-                  return min_stock ? (
-                    <>
-                      <StyledStock icon={icon} color={color} fixedWidth={true}/>
-                      {stock}/{min_stock}
-                    </>
-                  ) : undefined;
-                }
-              }],
-              code: [{
-                heading: 'Code',
-                render: codeFormat,
-                sortable: true
-              }],
-              name: [{
-                heading: 'Naam',
-                sortable: true
-              }],
-              manufacturer: [{
-                heading: 'Fabrikant',
-                render: (value) => value.contact.company,
-                sortable: true
-              }]
-            }}
-            onClick={({ id }) => history.push(`/products/${id}`)}
-          />
-        </>
-      ) : (
-        <Loading/>
+                      return min_stock ? (
+                        <>
+                          <StyledStock icon={icon} color={color} fixedWidth={true}/>
+                          {stock}/{min_stock}
+                        </>
+                      ) : undefined;
+                    }
+                  }],
+                  code: [{
+                    heading: 'Code',
+                    render: codeFormat,
+                    sortable: true
+                  }],
+                  name: [{
+                    heading: 'Naam',
+                    sortable: true
+                  }],
+                  manufacturer: [{
+                    heading: 'Fabrikant',
+                    render: (value) => value.contact.company,
+                    sortable: true
+                  }]
+                }}
+                onClick={({ id }) => history.push(`/products/${id}`)}
+              />
+            </>
+          ) : (
+            <Loading/>
+          )}
+        </Content>
       )}
-    </Content>
+    </Query>
   );
 }
 

@@ -5,7 +5,6 @@ import { gql } from 'apollo-boost';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import React from 'react';
-import { useQuery } from 'react-apollo-hooks';
 import { Redirect, RouteComponentProps } from 'react-router';
 
 import { Button } from '../components/Button';
@@ -15,10 +14,10 @@ import { Heading } from '../components/Heading';
 import { Loading } from '../components/Loading';
 import { Row } from '../components/Row';
 import { Table } from '../components/Table';
-import { useRouter } from '../hooks/useRouter';
 import { Breakpoint, Identifiable } from '../types';
 import { codeFormat } from '../utils/codeFormat';
 import { priceFormat } from '../utils/priceFormat';
+import { Query } from 'react-apollo';
 
 type Params = {
   id: string
@@ -58,129 +57,133 @@ type Product = Identifiable & {
   }
 };
 
-export function Product({ match: { params: { id } } }: RouteComponentProps<Params>) {
-  const { history } = useRouter();
-  const { loading, data } = useQuery<{
-    product: Product
-  }>(gql`
-    query Product($id: ID!) {
-      product(id: $id) {
+const query = gql`
+  query Product($id: ID!) {
+    product(id: $id) {
+      id
+      name
+      code
+      price
+      sell_price
+      description
+      min_stock
+      stock
+      contents
+      packaging
+      packaging_amount
+      packaging_size
+      sold_since
+      substances {
         id
         name
-        code
-        price
-        sell_price
-        description
-        min_stock
-        stock
-        contents
-        packaging
-        packaging_amount
-        packaging_size
-        sold_since
-        substances {
-          id
-          name
-          amount
-        }
-        manufacturer{
-          id
-          contact {
-            company
-            address
-            postal_code
-            city
-            country
-            telephone
-            website
-          }
+        amount
+      }
+      manufacturer{
+        id
+        contact {
+          company
+          address
+          postal_code
+          city
+          country
+          telephone
+          website
         }
       }
     }
-  `, {
-    variables: {
-      id
-    }
-  });
+  }
+`;
 
+export function Product({ match: { params: { id } } }: RouteComponentProps<Params>) {
   function fallback<T>(value: T | undefined | null, transform: (value: T) => string = (v) => String(v)) {
     return value !== undefined && value !== null ? transform(value) : 'Onbekend';
   }
 
   return (
-    <Content title="Product">
-      {!loading && data ? data.product ? (
-        <>
-          <Heading type="h1">
-            {data.product.name}
-          </Heading>
-          <Heading type="h3">
-            Product {codeFormat(data.product.code)}
-          </Heading>
-          <StyledDescription>
-            {data.product.description || (
-              <FontAwesomeIcon icon={faMinus} color="rgba(0, 0, 0, .1)"/>
-            )}
-            <br/>
-            {data.product.sold_since ? (
-              <span>Verkocht sinds {format(Number(data.product.sold_since), 'PPPP', { locale: nl })}</span>
-            ) : (
-              <span>Dit product wordt momenteel niet verkocht</span>
-            )}
-          </StyledDescription>
-          <StyledRow spacing={1}>
-            <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
-              <StyledBox>
-                <Heading type="h2">
-                  Informatie
-                </Heading>
-                <span>Inkoopprijsprijs: {fallback(data.product.price, priceFormat)}</span>
-                <span>Verkoopprijs: {fallback(data.product.sell_price, priceFormat)}</span>
-                <span>Huidige voorraad: {fallback(data.product.stock)}</span>
-                <span>Minimale voorraad: {fallback(data.product.min_stock)}</span>
-                <span>Gewicht: {fallback(data.product.contents)}</span>
-                <span>Verpakking: {fallback(data.product.packaging)}</span>
-                <span>Hoeveelheid: {fallback(data.product.packaging_amount)}</span>
-                <span>Verpakkingsformaat: {fallback(data.product.packaging_size)}</span>
-              </StyledBox>
-            </Column>
-            <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
-              <StyledBox>
-                <Heading type="h2">
-                  Fabrikant
-                </Heading>
-                <span>{data.product.manufacturer.contact.company}</span>
-                <span>{data.product.manufacturer.contact.address}</span>
-                <span>{data.product.manufacturer.contact.postal_code} {data.product.manufacturer.contact.city}</span>
-                <span>{data.product.manufacturer.contact.country}</span>
-                <span>{data.product.manufacturer.contact.telephone}</span>
-                <StyledWebsite>
-                  <Button onClick={() => window.location.assign(data.product.manufacturer.contact.website)}>
-                    Website
-                  </Button>
-                </StyledWebsite>
-              </StyledBox>
-            </Column>
-          </StyledRow>
-          <Table<Substances>
-            rows={data.product.substances}
-            columns={{
-              name: [{
-                heading: 'Naam'
-              }],
-              amount: [{
-                heading: 'Hoeveelheid'
-              }]
-            }}
-            heading="Stoffen"
-          />
-        </>
-      ) : (
-        <Redirect to="/products"/>
-      ) : (
-        <Loading/>
+    <Query<{ product: Product }>
+      query={query}
+      variables={{
+        id
+      }}
+    >
+      {({ loading, data }) => (
+        <Content title="Product">
+          {!loading && data ? data.product ? (
+            <>
+              <Heading type="h1">
+                {data.product.name}
+              </Heading>
+              <Heading type="h3">
+                Product {codeFormat(data.product.code)}
+              </Heading>
+              <StyledDescription>
+                {data.product.description || (
+                  <FontAwesomeIcon icon={faMinus} color="rgba(0, 0, 0, .1)"/>
+                )}
+                <br/>
+                {data.product.sold_since ? (
+                  <span>Verkocht sinds {format(Number(data.product.sold_since), 'PPPP', { locale: nl })}</span>
+                ) : (
+                  <span>Dit product wordt momenteel niet verkocht</span>
+                )}
+              </StyledDescription>
+              <StyledRow spacing={1}>
+                <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
+                  <StyledBox>
+                    <Heading type="h2">
+                      Informatie
+                    </Heading>
+                    <span>Inkoopprijsprijs: {fallback(data.product.price, priceFormat)}</span>
+                    <span>Verkoopprijs: {fallback(data.product.sell_price, priceFormat)}</span>
+                    <span>Huidige voorraad: {fallback(data.product.stock)}</span>
+                    <span>Minimale voorraad: {fallback(data.product.min_stock)}</span>
+                    <span>Gewicht: {fallback(data.product.contents)}</span>
+                    <span>Verpakking: {fallback(data.product.packaging)}</span>
+                    <span>Hoeveelheid: {fallback(data.product.packaging_amount)}</span>
+                    <span>Verpakkingsformaat: {fallback(data.product.packaging_size)}</span>
+                  </StyledBox>
+                </Column>
+                <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
+                  <StyledBox>
+                    <Heading type="h2">
+                      Fabrikant
+                    </Heading>
+                    <span>{data.product.manufacturer.contact.company}</span>
+                    <span>{data.product.manufacturer.contact.address}</span>
+                    <span>
+                      {data.product.manufacturer.contact.postal_code} {data.product.manufacturer.contact.city}
+                    </span>
+                    <span>{data.product.manufacturer.contact.country}</span>
+                    <span>{data.product.manufacturer.contact.telephone}</span>
+                    <StyledWebsite>
+                      <Button onClick={() => window.location.assign(data.product.manufacturer.contact.website)}>
+                        Website
+                      </Button>
+                    </StyledWebsite>
+                  </StyledBox>
+                </Column>
+              </StyledRow>
+              <Table<Substances>
+                rows={data.product.substances}
+                columns={{
+                  name: [{
+                    heading: 'Naam'
+                  }],
+                  amount: [{
+                    heading: 'Hoeveelheid'
+                  }]
+                }}
+                heading="Stoffen"
+              />
+            </>
+          ) : (
+            <Redirect to="/products"/>
+          ) : (
+            <Loading/>
+          )}
+        </Content>
       )}
-    </Content>
+    </Query>
   );
 }
 

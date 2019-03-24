@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { useState } from 'react';
-import { useQuery } from 'react-apollo-hooks';
+import { Query } from 'react-apollo';
 
 import { Button } from '../components/Button';
 import { Column } from '../components/Column';
@@ -104,154 +104,162 @@ export function PurchaseProduct() {
   );
 }
 
+const queryOne = gql`
+  query PurchaseProductProducts($search: String!) {
+    products(search: $search, limit: 5, stock: false) {
+      id
+      name
+      code
+      state
+      stock
+      min_stock
+      location
+    }
+  }
+`;
+
 function StepOne({ nextStep, product, setProduct }: StepProps) {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 250);
-  const { data, loading } = useQuery<{
-    products: Product[]
-  }>(gql`
-    query PurchaseProductProducts($search: String!) {
-      products(search: $search, limit: 5, stock: false) {
+
+  return (
+    <Query<{ products: Product[] }>
+      query={queryOne}
+      variables={{
+        search: debouncedSearch
+      }}
+    >
+      {({ data, loading }) => (
+        <>
+          <StyledHeading type="h2">
+            Selecteer product
+          </StyledHeading>
+          <Search<Product>
+            onSearch={setSearch}
+            value={product}
+            onChange={setProduct}
+            options={!loading && data ? data.products : undefined}
+            renderLine={(value) => {
+              const { icon, color } = PRODUCT_STATES[value.state];
+
+              return (
+                <>
+                  <StyledStock icon={icon} color={color} fixedWidth={true}/>
+                  {value.name}
+                </>
+              );
+            }}
+            render={(value) => (
+              <>
+                <Heading type="h2">
+                  {value.name}
+                </Heading>
+                <Heading type="h3">
+                  {codeFormat(value.code)}
+                </Heading>
+                <StyledDetails>
+                  <span>Voorraad: {value.stock}/{value.min_stock}</span>
+                  <span>Locatie: {value.location}</span>
+                </StyledDetails>
+              </>
+            )}
+          />
+          <StyledFooter right={true}>
+            <Button disabled={!product} onClick={nextStep}>
+              Volgende
+            </Button>
+          </StyledFooter>
+        </>
+      )}
+    </Query>
+  );
+}
+
+const queryTwo = gql`
+  query PurchaseProductManufacturers($search: String!, $product: String!) {
+    manufacturers(search: $search, limit: 5, product: $product) {
+      id
+      contact {
+        company
+        first_name
+        last_name
+        address
+        postal_code
+        city
+        country
+        telephone
+      }
+      product(name: $product) {
         id
         name
         code
-        state
-        stock
-        min_stock
-        location
+        price
+        contents
+        packaging
+        packaging_amount
+        packaging_size
       }
     }
-  `, {
-    variables: {
-      search: debouncedSearch
-    }
-  });
-
-  return (
-    <>
-      <StyledHeading type="h2">
-        Selecteer product
-      </StyledHeading>
-      <Search<Product>
-        onSearch={setSearch}
-        value={product}
-        onChange={setProduct}
-        options={!loading && data ? data.products : undefined}
-        renderLine={(value) => {
-          const { icon, color } = PRODUCT_STATES[value.state];
-
-          return (
-            <>
-              <StyledStock icon={icon} color={color} fixedWidth={true}/>
-              {value.name}
-            </>
-          );
-        }}
-        render={(value) => (
-          <>
-            <Heading type="h2">
-              {value.name}
-            </Heading>
-            <Heading type="h3">
-              {codeFormat(value.code)}
-            </Heading>
-            <StyledDetails>
-              <span>Voorraad: {value.stock}/{value.min_stock}</span>
-              <span>Locatie: {value.location}</span>
-            </StyledDetails>
-          </>
-        )}
-      />
-      <StyledFooter right={true}>
-        <Button disabled={!product} onClick={nextStep}>
-          Volgende
-        </Button>
-      </StyledFooter>
-    </>
-  );
-}
+  }
+`;
 
 function StepTwo({ previousStep, nextStep, product, manufacturer, setManufacturer }: StepProps) {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 250);
-  const { data, loading } = useQuery<{
-    manufacturers: Manufacturer[]
-  }>(gql`
-    query PurchaseProductManufacturers($search: String!, $product: String!) {
-      manufacturers(search: $search, limit: 5, product: $product) {
-        id
-        contact {
-          company
-          first_name
-          last_name
-          address
-          postal_code
-          city
-          country
-          telephone
-        }
-        product(name: $product) {
-          id
-          name
-          code
-          price
-          contents
-          packaging
-          packaging_amount
-          packaging_size
-        }
-      }
-    }
-  `, {
-    variables: {
-      search: debouncedSearch,
-      product: product && product.name
-    }
-  });
 
   function fallback<T>(value: T | undefined | null, transform: (value: T) => string = (v) => String(v)) {
     return value !== undefined && value !== null ? transform(value) : 'Onbekend';
   }
 
   return (
-    <>
-      <StyledHeading type="h2">
-        Selecteer fabrikant
-      </StyledHeading>
-      <Search<Manufacturer>
-        onSearch={setSearch}
-        value={manufacturer}
-        onChange={setManufacturer}
-        options={!loading && data ? data.manufacturers : undefined}
-        renderLine={(value) => value.contact.company}
-        render={(value) => (
-          <>
-            <Heading type="h2">
-              {value.contact.company}
-            </Heading>
-            <Heading type="h3">
-              {codeFormat(value.id)}
-            </Heading>
-            <StyledDetails>
-              <span>Productcode: {codeFormat(value.product.id)}</span>
-              <span>Prijs: {fallback(value.product.price, priceFormat)}</span>
-              <span>Gewicht: {fallback(value.product.contents)}</span>
-              <span>Verpakking: {fallback(value.product.packaging)}</span>
-              <span>Hoeveelheid: {fallback(value.product.packaging_amount)}</span>
-              <span>Verpakkingsformaat: {fallback(value.product.packaging_size)}</span>
-            </StyledDetails>
-          </>
-        )}
-      />
-      <StyledFooter>
-        <Button onClick={previousStep}>
-          Vorige
-        </Button>
-        <Button disabled={!manufacturer} onClick={nextStep}>
-          Volgende
-        </Button>
-      </StyledFooter>
-    </>
+    <Query<{ manufacturers: Manufacturer[] }>
+      query={queryTwo}
+      variables={{
+        search: debouncedSearch,
+        product: product && product.name
+      }}
+    >
+      {({ data, loading }) => (
+        <>
+          <StyledHeading type="h2">
+            Selecteer fabrikant
+          </StyledHeading>
+          <Search<Manufacturer>
+            onSearch={setSearch}
+            value={manufacturer}
+            onChange={setManufacturer}
+            options={!loading && data ? data.manufacturers : undefined}
+            renderLine={(value) => value.contact.company}
+            render={(value) => (
+              <>
+                <Heading type="h2">
+                  {value.contact.company}
+                </Heading>
+                <Heading type="h3">
+                  {codeFormat(value.id)}
+                </Heading>
+                <StyledDetails>
+                  <span>Productcode: {codeFormat(value.product.id)}</span>
+                  <span>Prijs: {fallback(value.product.price, priceFormat)}</span>
+                  <span>Gewicht: {fallback(value.product.contents)}</span>
+                  <span>Verpakking: {fallback(value.product.packaging)}</span>
+                  <span>Hoeveelheid: {fallback(value.product.packaging_amount)}</span>
+                  <span>Verpakkingsformaat: {fallback(value.product.packaging_size)}</span>
+                </StyledDetails>
+              </>
+            )}
+          />
+          <StyledFooter>
+            <Button onClick={previousStep}>
+              Vorige
+            </Button>
+            <Button disabled={!manufacturer} onClick={nextStep}>
+              Volgende
+            </Button>
+          </StyledFooter>
+        </>
+      )}
+    </Query>
   );
 }
 

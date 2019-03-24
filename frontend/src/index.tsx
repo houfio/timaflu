@@ -1,7 +1,7 @@
 import ApolloClient, { InMemoryCache } from 'apollo-boost';
 import 'normalize.css';
 import React from 'react';
-import { ApolloProvider } from 'react-apollo-hooks';
+import { ApolloProvider } from 'react-apollo';
 import { render } from 'react-dom';
 
 import { Root } from './containers/Root';

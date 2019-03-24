@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import React from 'react';
-import { useQuery } from 'react-apollo-hooks';
+import { Query } from 'react-apollo';
 
 import { Content } from '../components/Content';
 import { Loading } from '../components/Loading';
@@ -23,65 +23,68 @@ type Customers = Identifiable & {
   }>
 };
 
-export function Customers() {
-  const { history } = useRouter();
-  const { loading, data } = useQuery<{
-    users: Customers[]
-  }>(gql`
-    query Users {
-      users(role: CUSTOMER) {
-        id
-        contact {
-          first_name
-          last_name
-          company
-          telephone
-        }
-        orders {
-          state
-        }
+const query = gql`
+  query Users {
+    users(role: CUSTOMER) {
+      id
+      contact {
+        first_name
+        last_name
+        company
+        telephone
+      }
+      orders {
+        state
       }
     }
-  `);
+  }
+`;
+
+export function Customers() {
+  const { history } = useRouter();
 
   return (
-    <Content title="Klanten">
-      {!loading && data ? (
-        <Table<Customers>
-          rows={data.users}
-          columns={{
-            orders: [{
-              heading: '',
-              render: (value) => {
-                if (!value.length) {
-                  return;
-                }
+    <Query<{ users: Customers[] }> query={query}>
+      {({ loading, data }) => (
+        <Content title="Klanten">
+          {!loading && data ? (
+            <Table<Customers>
+              rows={data.users}
+              columns={{
+                orders: [{
+                  heading: '',
+                  render: (value) => {
+                    if (!value.length) {
+                      return;
+                    }
 
-                const { icon, color } = INVOICE_STATES[value[0].state];
+                    const { icon, color } = INVOICE_STATES[value[0].state];
 
-                return (
-                  <FontAwesomeIcon icon={icon} color={color} fixedWidth={true}/>
-                );
-              }
-            }],
-            contact: [{
-              heading: 'Naam',
-              render: (value) => value.company,
-              sortable: true
-            }, {
-              heading: 'Contactpersoon',
-              render: (value) => `${value.first_name} ${value.last_name}`,
-              sortable: true
-            }, {
-              heading: 'Telefoonnummer',
-              render: (value) => value.telephone
-            }]
-          }}
-          onClick={({ id }) => history.push(`/customers/${id}`)}
-        />
-      ) : (
-        <Loading/>
+                    return (
+                      <FontAwesomeIcon icon={icon} color={color} fixedWidth={true}/>
+                    );
+                  }
+                }],
+                contact: [{
+                  heading: 'Naam',
+                  render: (value) => value.company,
+                  sortable: true
+                }, {
+                  heading: 'Contactpersoon',
+                  render: (value) => `${value.first_name} ${value.last_name}`,
+                  sortable: true
+                }, {
+                  heading: 'Telefoonnummer',
+                  render: (value) => value.telephone
+                }]
+              }}
+              onClick={({ id }) => history.push(`/customers/${id}`)}
+            />
+          ) : (
+            <Loading/>
+          )}
+        </Content>
       )}
-    </Content>
+    </Query>
   );
 }

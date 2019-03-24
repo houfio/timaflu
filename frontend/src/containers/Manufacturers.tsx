@@ -1,14 +1,12 @@
 import { gql } from 'apollo-boost';
 import React from 'react';
-import { useQuery } from 'react-apollo-hooks';
+import { Query } from 'react-apollo';
 
 import { Content } from '../components/Content';
 import { Loading } from '../components/Loading';
 import { Table } from '../components/Table';
 import { useRouter } from '../hooks/useRouter';
 import { Identifiable } from '../types';
-import { codeFormat } from '../utils/codeFormat';
-import { compare } from '../utils/compare';
 
 type Manufacturers = Identifiable & {
   id: number,
@@ -22,52 +20,55 @@ type Manufacturers = Identifiable & {
   products: Identifiable[]
 };
 
-export function Manufacturers() {
-  const { history } = useRouter();
-  const { loading, data } = useQuery<{
-    manufacturers: Manufacturers[]
-  }>(gql`
-    query Manufacturers {
-      manufacturers {
+const query = gql`
+  query Manufacturers {
+    manufacturers {
+      id
+      contact {
+        first_name
+        last_name
+        company
+      }
+      products {
         id
-        contact {
-          first_name
-          last_name
-          company
-        }
-        products {
-          id
-        }
       }
     }
-  `);
+  }
+`;
+
+export function Manufacturers() {
+  const { history } = useRouter();
 
   return (
-    <Content title="Fabrikanten">
-      {!loading && data ? (
-        <Table<Manufacturers>
-          rows={data.manufacturers}
-          columns={{
-            contact: [{
-              heading: 'Naam',
-              render: (value) => value.company,
-              sortable: true
-            }, {
-              heading: 'Contactpersoon',
-              render: (value) => `${value.first_name} ${value.last_name}`,
-              sortable: true
-            }],
-            products: [{
-              heading: 'Aantal producten',
-              render: (value) => value.length,
-              sortable: true
-            }]
-          }}
-          onClick={({ id }) => history.push(`/manufacturers/${id}`)}
-        />
-      ) : (
-        <Loading />
+    <Query<{ manufacturers: Manufacturers[] }> query={query}>
+      {({ loading, data }) => (
+        <Content title="Fabrikanten">
+          {!loading && data ? (
+            <Table<Manufacturers>
+              rows={data.manufacturers}
+              columns={{
+                contact: [{
+                  heading: 'Naam',
+                  render: (value) => value.company,
+                  sortable: true
+                }, {
+                  heading: 'Contactpersoon',
+                  render: (value) => `${value.first_name} ${value.last_name}`,
+                  sortable: true
+                }],
+                products: [{
+                  heading: 'Aantal producten',
+                  render: (value) => value.length,
+                  sortable: true
+                }]
+              }}
+              onClick={({ id }) => history.push(`/manufacturers/${id}`)}
+            />
+          ) : (
+            <Loading />
+          )}
+        </Content>
       )}
-    </Content>
+    </Query>
   );
 }

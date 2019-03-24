@@ -3,7 +3,7 @@ import { faCoins } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { gql } from 'apollo-boost';
 import React from 'react';
-import { useQuery } from 'react-apollo-hooks';
+import { Query } from 'react-apollo';
 
 import { Button } from '../components/Button';
 import { Content } from '../components/Content';
@@ -28,84 +28,87 @@ type Order = Identifiable & {
   days_left: number
 };
 
+const query = gql`
+  query Products {
+    orders {
+      id
+      contact {
+        company
+      }
+      description
+      total
+      state
+      days_left
+    }
+  }
+`;
+
 export function Orders() {
   const { history } = useRouter();
-  const { loading, data } = useQuery<{
-    orders: Order[]
-  }>(gql`
-    query Products {
-      orders {
-        id
-        contact {
-          company
-        }
-        description
-        total
-        state
-        days_left
-      }
-    }
-  `);
 
   return (
-    <Content title="Bestellingen">
-      {!loading && data ? (
-        <>
-          <StyledHeader>
-            <Button onClick={() => history.push('/orders/create')}>
-              Bestelling aanmaken
-            </Button>
-            <Button onClick={() => history.push('/orders/queue')}>
-              Wachtrij
-            </Button>
-          </StyledHeader>
-          <Table<Order>
-            rows={data.orders}
-            columns={{
-              state: [{
-                heading: 'Status',
-                render: (value, row) => {
-                  const { name, color, icon } = INVOICE_STATES[value];
+    <Query<{ orders: Order[] }> query={query}>
+      {({ loading, data }) => (
+        <Content title="Bestellingen">
+          {!loading && data ? (
+            <>
+              <StyledHeader>
+                <Button onClick={() => history.push('/orders/create')}>
+                  Bestelling aanmaken
+                </Button>
+                <Button onClick={() => history.push('/orders/queue')}>
+                  Wachtrij
+                </Button>
+              </StyledHeader>
+              <Table<Order>
+                rows={data.orders}
+                columns={{
+                  state: [{
+                    heading: 'Status',
+                    render: (value, row) => {
+                      const { name, color, icon } = INVOICE_STATES[value];
 
-                  return (
-                    <>
-                      <StyledState
-                        icon={row.days_left <= 0 ? faCoins : icon}
-                        color={row.days_left <= 0 ? 'red' : color}
-                        fixedWidth={true}
-                      />
-                      {name}
-                    </>
-                  );
-                }
-              }],
-              id: [{
-                heading: 'Code',
-                render: codeFormat,
-                sortable: true
-              }],
-              contact: [{
-                heading: 'Klant',
-                render: (value) => value.company,
-                sortable: true
-              }],
-              description: [{
-                heading: 'Beschrijving',
-                render: (value) => value ? truncate(value, 20) : undefined
-              }],
-              total: [{
-                heading: 'Prijs',
-                render: priceFormat,
-                sortable: true
-              }]
-            }}
-            onClick={({ id }) => history.push(`/orders/${id}`)}
-          />
-        </>
-      ) : (
-        <Loading/>
+                      return (
+                        <>
+                          <StyledState
+                            icon={row.days_left <= 0 ? faCoins : icon}
+                            color={row.days_left <= 0 ? 'red' : color}
+                            fixedWidth={true}
+                          />
+                          {name}
+                        </>
+                      );
+                    }
+                  }],
+                  id: [{
+                    heading: 'Code',
+                    render: codeFormat,
+                    sortable: true
+                  }],
+                  contact: [{
+                    heading: 'Klant',
+                    render: (value) => value.company,
+                    sortable: true
+                  }],
+                  description: [{
+                    heading: 'Beschrijving',
+                    render: (value) => value ? truncate(value, 20) : undefined
+                  }],
+                  total: [{
+                    heading: 'Prijs',
+                    render: priceFormat,
+                    sortable: true
+                  }]
+                }}
+                onClick={({ id }) => history.push(`/orders/${id}`)}
+              />
+            </>
+          ) : (
+            <Loading/>
+          )}
+        </Content>
       )}
-    </Content>
+    </Query>
   );
 }
 

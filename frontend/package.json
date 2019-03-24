@@ -19,7 +19,6 @@
     "normalize.css": "^8.0.1",
     "react": "^16.8.5",
     "react-apollo": "^2.5.2",
-    "react-apollo-hooks": "^0.4.3",
     "react-dom": "^16.8.5",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0"

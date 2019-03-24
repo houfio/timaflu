@@ -1,7 +1,7 @@
 import styled from '@emotion/styled/macro';
 import { gql } from 'apollo-boost';
 import React from 'react';
-import { useQuery } from 'react-apollo-hooks';
+import { Query } from 'react-apollo';
 import { Redirect, RouteComponentProps } from 'react-router';
 
 import { Button } from '../components/Button';
@@ -43,96 +43,100 @@ type Manufacturer = Identifiable & {
   products: Products[]
 };
 
-export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<Params>) {
-  const { history } = useRouter();
-  const { loading, data } = useQuery<{
-    manufacturer: Manufacturer
-  }>(gql`
-    query Manufacturer($id: ID!) {
-      manufacturer(id: $id) {
+const query = gql`
+  query Manufacturer($id: ID!) {
+    manufacturer(id: $id) {
+      id
+      contact {
+        company
+        first_name
+        last_name
+        address
+        postal_code
+        city
+        country
+        telephone
+        website
+      }
+      products {
         id
-        contact {
-          company
-          first_name
-          last_name
-          address
-          postal_code
-          city
-          country
-          telephone
-          website
-        }
-        products {
-          id
-          name
-          code
-          price
-          description_short
-        }
+        name
+        code
+        price
+        description_short
       }
     }
-  `, {
-    variables: {
-      id
-    }
-  });
+  }
+`;
+
+export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<Params>) {
+  const { history } = useRouter();
 
   return (
-    <Content title="Fabrikant">
-      {!loading && data ? data.manufacturer ? (
-        <>
-          <Heading type="h1">
-            {data.manufacturer.contact.company}
-          </Heading>
-          <Heading type="h3">
-            Fabrikant {codeFormat(data.manufacturer.id)}
-          </Heading>
-          <StyledDescription>
-            Contactpersoon: {data.manufacturer.contact.first_name} {data.manufacturer.contact.last_name}
-          </StyledDescription>
-          <StyledBox>
-            <Heading type="h2">
-              Informatie
-            </Heading>
-            <span>{data.manufacturer.contact.company}</span>
-            <span>{data.manufacturer.contact.address}</span>
-            <span>{data.manufacturer.contact.postal_code} {data.manufacturer.contact.city}</span>
-            <span>{data.manufacturer.contact.country}</span>
-            <span>{data.manufacturer.contact.telephone}</span>
-            <StyledWebsite>
-              <Button onClick={() => window.location.assign(data.manufacturer.contact.website)}>
-                Website
-              </Button>
-            </StyledWebsite>
-          </StyledBox>
-          <Table<Products>
-            rows={data.manufacturer.products}
-            columns={{
-              name: [{
-                heading: 'Naam'
-              }],
-              code: [{
-                heading: 'Code',
-                render: codeFormat
-              }],
-              price: [{
-                heading: 'Prijs',
-                render: priceFormat
-              }],
-              description_short: [{
-                heading: 'Beschrijving'
-              }]
-            }}
-            heading="Producten"
-            onClick={({ id: productId }) => history.push(`/products/${productId}`)}
-          />
-        </>
-      ) : (
-        <Redirect to="/manufacturers"/>
-      ) : (
-        <Loading/>
+    <Query<{ manufacturer: Manufacturer }>
+      query={query}
+      variables={{
+        id
+      }}
+    >
+      {({ loading, data }) => (
+        <Content title="Fabrikant">
+          {!loading && data ? data.manufacturer ? (
+            <>
+              <Heading type="h1">
+                {data.manufacturer.contact.company}
+              </Heading>
+              <Heading type="h3">
+                Fabrikant {codeFormat(data.manufacturer.id)}
+              </Heading>
+              <StyledDescription>
+                Contactpersoon: {data.manufacturer.contact.first_name} {data.manufacturer.contact.last_name}
+              </StyledDescription>
+              <StyledBox>
+                <Heading type="h2">
+                  Informatie
+                </Heading>
+                <span>{data.manufacturer.contact.company}</span>
+                <span>{data.manufacturer.contact.address}</span>
+                <span>{data.manufacturer.contact.postal_code} {data.manufacturer.contact.city}</span>
+                <span>{data.manufacturer.contact.country}</span>
+                <span>{data.manufacturer.contact.telephone}</span>
+                <StyledWebsite>
+                  <Button onClick={() => window.location.assign(data.manufacturer.contact.website)}>
+                    Website
+                  </Button>
+                </StyledWebsite>
+              </StyledBox>
+              <Table<Products>
+                rows={data.manufacturer.products}
+                columns={{
+                  name: [{
+                    heading: 'Naam'
+                  }],
+                  code: [{
+                    heading: 'Code',
+                    render: codeFormat
+                  }],
+                  price: [{
+                    heading: 'Prijs',
+                    render: priceFormat
+                  }],
+                  description_short: [{
+                    heading: 'Beschrijving'
+                  }]
+                }}
+                heading="Producten"
+                onClick={({ id: productId }) => history.push(`/products/${productId}`)}
+              />
+            </>
+          ) : (
+            <Redirect to="/manufacturers"/>
+          ) : (
+            <Loading/>
+          )}
+        </Content>
       )}
-    </Content>
+    </Query>
   );
 }
 

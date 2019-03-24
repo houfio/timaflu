@@ -1,6 +1,6 @@
 import { objectType } from 'yoga';
 
-import { Order } from '../context';
+import { Order } from '../types';
 import { execute } from '../utils/execute';
 
 export const Invoice = objectType({

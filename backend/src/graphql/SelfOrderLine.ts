@@ -1,6 +1,6 @@
 import { objectType } from 'yoga';
 
-import { Product, SelfOrder } from '../context';
+import { Product, SelfOrder } from '../types';
 import { execute } from '../utils/execute';
 
 export const SelfOrderLine = objectType({

@@ -115,3 +115,8 @@ export type ProductRevenue = {
   id: number,
   revenue: number
 };
+
+export type ProductAmount = {
+  id: number,
+  amount: number
+};

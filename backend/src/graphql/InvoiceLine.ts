@@ -1,6 +1,6 @@
 import { objectType } from 'yoga';
 
-import { Bin, Invoice, Product, Robot } from '../context';
+import { Bin, Invoice, Product, Robot } from '../types';
 import { execute } from '../utils/execute';
 
 export const InvoiceLine = objectType({

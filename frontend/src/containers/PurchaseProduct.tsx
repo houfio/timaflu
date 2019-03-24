@@ -106,7 +106,7 @@ export function PurchaseProduct() {
 
 const queryOne = gql`
   query PurchaseProductProducts($search: String!) {
-    products(search: $search, limit: 5, stock: false) {
+    products(search: $search, limit: 5, sold: true) {
       id
       name
       code
@@ -138,7 +138,7 @@ function StepOne({ nextStep, product, setProduct }: StepProps) {
             onSearch={setSearch}
             value={product}
             onChange={setProduct}
-            options={!loading && data ? data.products : undefined}
+            options={!loading && data ? data.products.sort((a, b) => a.stock - b.stock) : undefined}
             renderLine={(value) => {
               const { icon, color } = PRODUCT_STATES[value.state];
 

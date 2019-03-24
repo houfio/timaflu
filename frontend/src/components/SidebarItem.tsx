@@ -18,7 +18,7 @@ export function SidebarItem({ children, icon, path, exact }: Props) {
   return (
     <StyledItem
       active={exact ? location.pathname === path : location.pathname.startsWith(path)}
-      onClick={() => history.push(path)}
+      onClick={() => history.push(`${process.env.PUBLIC_URL}${path}`)}
     >
       <StyledIcon icon={icon} fixedWidth={true}/>
       {children}

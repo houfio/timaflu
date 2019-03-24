@@ -442,7 +442,7 @@ function StepFour({ previousStep, user, products, contact, subtotal, total }: St
     initialValues: {
       description: ''
     },
-    onSubmit: () => history.push('/orders')
+    onSubmit: () => history.push(`${process.env.PUBLIC_URL}/orders`)
   });
 
   return (

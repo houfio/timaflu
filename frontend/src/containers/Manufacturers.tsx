@@ -62,7 +62,7 @@ export function Manufacturers() {
                   sortable: true
                 }]
               }}
-              onClick={({ id }) => history.push(`/manufacturers/${id}`)}
+              onClick={({ id }) => history.push(`${process.env.PUBLIC_URL}/manufacturers/${id}`)}
             />
           ) : (
             <Loading />

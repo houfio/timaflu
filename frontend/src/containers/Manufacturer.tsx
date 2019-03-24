@@ -126,7 +126,7 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
                   }]
                 }}
                 heading="Producten"
-                onClick={({ id: productId }) => history.push(`/products/${productId}`)}
+                onClick={({ id: i }) => history.push(`${process.env.PUBLIC_URL}/products/${i}`)}
               />
             </>
           ) : (

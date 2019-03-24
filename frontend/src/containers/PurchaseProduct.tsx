@@ -273,7 +273,7 @@ function StepThree({ previousStep, manufacturer }: StepProps) {
     initialValues: {
       amount: ''
     },
-    onSubmit: () => history.push('/products')
+    onSubmit: () => history.push(`${process.env.PUBLIC_URL}/products`)
   });
 
   if (!manufacturer) {

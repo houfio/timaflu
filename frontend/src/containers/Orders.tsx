@@ -53,10 +53,10 @@ export function Orders() {
           {!loading && data ? (
             <>
               <StyledHeader>
-                <Button onClick={() => history.push('/orders/create')}>
+                <Button onClick={() => history.push(`${process.env.PUBLIC_URL}/orders/create`)}>
                   Bestelling aanmaken
                 </Button>
-                <Button onClick={() => history.push('/orders/queue')}>
+                <Button onClick={() => history.push(`${process.env.PUBLIC_URL}/orders/queue`)}>
                   Wachtrij
                 </Button>
               </StyledHeader>
@@ -100,7 +100,7 @@ export function Orders() {
                     sortable: true
                   }]
                 }}
-                onClick={({ id }) => history.push(`/orders/${id}`)}
+                onClick={({ id }) => history.push(`${process.env.PUBLIC_URL}/orders/${id}`)}
               />
             </>
           ) : (

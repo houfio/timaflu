@@ -78,7 +78,7 @@ export function Customers() {
                   render: (value) => value.telephone
                 }]
               }}
-              onClick={({ id }) => history.push(`/customers/${id}`)}
+              onClick={({ id }) => history.push(`${process.env.PUBLIC_URL}/customers/${id}`)}
             />
           ) : (
             <Loading/>

@@ -55,10 +55,10 @@ export function Products() {
           {!loading && data ? (
             <>
               <StyledHeader>
-                <Button onClick={() => history.push('/products/purchase')}>
+                <Button onClick={() => history.push(`${process.env.PUBLIC_URL}/products/purchase`)}>
                   Product inkopen
                 </Button>
-                <Button onClick={() => history.push('/products/purchase/history')}>
+                <Button onClick={() => history.push(`${process.env.PUBLIC_URL}/products/purchase/history`)}>
                   Inkoophistorie
                 </Button>
               </StyledHeader>
@@ -93,7 +93,7 @@ export function Products() {
                     sortable: true
                   }]
                 }}
-                onClick={({ id }) => history.push(`/products/${id}`)}
+                onClick={({ id }) => history.push(`${process.env.PUBLIC_URL}/products/${id}`)}
               />
             </>
           ) : (

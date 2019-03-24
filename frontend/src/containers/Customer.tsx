@@ -148,7 +148,7 @@ export function Customer({ match: { params: { id } } }: RouteComponentProps<Para
                   }]
                 }}
                 heading="Bestellingen"
-                onClick={({ id: i }) => history.push(`/orders/${i}`)}
+                onClick={({ id: i }) => history.push(`${process.env.PUBLIC_URL}/orders/${i}`)}
               />
             </>
           ) : (

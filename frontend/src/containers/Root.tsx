@@ -47,19 +47,19 @@ export function Root() {
       <BrowserRouter>
         <Sidebar/>
         <Switch>
-          <Route path="/" exact={true} component={Dashboard}/>
-          <Route path="/orders" exact={true} component={Orders}/>
-          <Route path="/orders/create" exact={true} component={CreateOrder}/>
-          <Route path="/orders/queue" exact={true} component={OrderQueue}/>
-          <Route path="/orders/:id" exact={true} component={Order}/>
-          <Route path="/customers" exact={true} component={Customers}/>
-          <Route path="/customers/:id" exact={true} component={Customer}/>
-          <Route path="/products" exact={true} component={Products}/>
-          <Route path="/products/purchase" exact={true} component={PurchaseProduct}/>
-          <Route path="/products/purchase/history" exact={true} component={PurchaseHistory}/>
-          <Route path="/products/:id" exact={true} component={Product}/>
-          <Route path="/manufacturers" exact={true} component={Manufacturers}/>
-          <Route path="/manufacturers/:id" exact={true} component={Manufacturer}/>
+          <Route path={`${process.env.PUBLIC_URL}/`} exact={true} component={Dashboard}/>
+          <Route path={`${process.env.PUBLIC_URL}/orders`} exact={true} component={Orders}/>
+          <Route path={`${process.env.PUBLIC_URL}/orders/create`} exact={true} component={CreateOrder}/>
+          <Route path={`${process.env.PUBLIC_URL}/orders/queue`} exact={true} component={OrderQueue}/>
+          <Route path={`${process.env.PUBLIC_URL}/orders/:id`} exact={true} component={Order}/>
+          <Route path={`${process.env.PUBLIC_URL}/customers`} exact={true} component={Customers}/>
+          <Route path={`${process.env.PUBLIC_URL}/customers/:id`} exact={true} component={Customer}/>
+          <Route path={`${process.env.PUBLIC_URL}/products`} exact={true} component={Products}/>
+          <Route path={`${process.env.PUBLIC_URL}/products/purchase`} exact={true} component={PurchaseProduct}/>
+          <Route path={`${process.env.PUBLIC_URL}/products/purchase/history`} exact={true} component={PurchaseHistory}/>
+          <Route path={`${process.env.PUBLIC_URL}/products/:id`} exact={true} component={Product}/>
+          <Route path={`${process.env.PUBLIC_URL}/manufacturers`} exact={true} component={Manufacturers}/>
+          <Route path={`${process.env.PUBLIC_URL}/manufacturers/:id`} exact={true} component={Manufacturer}/>
           <Route component={NotFound}/>
         </Switch>
       </BrowserRouter>

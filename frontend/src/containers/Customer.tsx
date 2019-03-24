@@ -175,7 +175,6 @@ const StyledBox = styled.div`
   padding: 1rem;
   background-color: whitesmoke;
   border-radius: .5rem;
-  height: 100%;
 `;
 
 const StyledState = styled(FontAwesomeIcon)`

@@ -19,6 +19,10 @@ type OrderLine = Identifiable & {
   }
 };
 
+type Robot = Identifiable & {
+  collecting?: Identifiable
+};
+
 type QueueLine = Identifiable & {
   bins: Array<Identifiable & {
     code: string
@@ -37,7 +41,8 @@ type QueueLine = Identifiable & {
         telephone: string
       }
     }
-  }
+  },
+  robots: Robot[]
 };
 
 const query = gql`
@@ -71,79 +76,105 @@ const query = gql`
         }
       }
     }
+    robots {
+      id
+      collecting {
+        id
+      }
+    }
   }
 `;
 
 export function OrderQueue() {
   return (
-    <Query<{ queue: QueueLine[] }> query={query}>
+    <Query<{ queue: QueueLine[], robots: Robot[] }> query={query}>
       {({ loading, data }) => (
         <Content title="Wachtrij">
           {!loading && data ? (
-            <Table<QueueLine>
-              rows={data.queue}
-              columns={{
-                id: [{
-                  heading: 'Factuur',
-                  render: codeFormat,
-                  sortable: true
-                }],
-                invoice: [{
-                  heading: 'Klant',
-                  render: (value) => value.order.contact.company
-                }],
-                bins: [{
-                  heading: 'Bakken',
-                  render: (value) => value.map((bin) => codeFormat(bin.code)).join(', ')
-                }, {
-                  heading: '',
-                  render: () => (
-                    <Button>
-                      Print label
-                    </Button>
-                  )
-                }, {
-                  heading: '',
-                  render: () => (
-                    <Button>
-                      Afronden
-                    </Button>
-                  )
-                }]
-              }}
-              renderExtra={(row) => (
-                <StyledExtra>
-                  <Heading type="h2">
-                    Verzendadres
-                  </Heading>
-                  <span>{row.invoice.order.contact.company}</span>
-                  <span>{row.invoice.order.contact.first_name} {row.invoice.order.contact.last_name}</span>
-                  <span>{row.invoice.order.contact.address}</span>
-                  <span>{row.invoice.order.contact.postal_code} {row.invoice.order.contact.city}</span>
-                  <span>{row.invoice.order.contact.country}</span>
-                  <StyledTable>
-                    <Table<OrderLine>
-                      rows={row.invoice.lines}
-                      columns={{
-                        product: [{
-                          heading: 'Product',
-                          render: (value) => value.name,
-                          sortable: true
-                        }, {
-                          heading: 'Code',
-                          render: (value) => codeFormat(value.code),
-                          sortable: true
-                        }],
-                        amount: [{
-                          heading: 'Aantal',
-                          sortable: true
-                        }]
-                      }}
-                    />
-                  </StyledTable>
-                </StyledExtra>
-              )}
-            />
+            <>
+              <Table<QueueLine>
+                rows={data.queue}
+                columns={{
+                  id: [{
+                    heading: 'Factuur',
+                    render: codeFormat,
+                    sortable: true
+                  }],
+                  invoice: [{
+                    heading: 'Klant',
+                    render: (value) => value.order.contact.company
+                  }],
+                  bins: [{
+                    heading: 'Bakken',
+                    render: (value) => value.map((bin) => codeFormat(bin.code)).join(', ')
+                  }, {
+                    heading: '',
+                    render: () => (
+                      <Button>
+                        Print label
+                      </Button>
+                    )
+                  }, {
+                    heading: '',
+                    render: () => (
+                      <Button>
+                        Afronden
+                      </Button>
+                    )
+                  }]
+                }}
+                renderExtra={(row) => (
+                  <StyledExtra>
+                    <Heading type="h2">
+                      Verzendadres
+                    </Heading>
+                    <span>{row.invoice.order.contact.company}</span>
+                    <span>{row.invoice.order.contact.first_name} {row.invoice.order.contact.last_name}</span>
+                    <span>{row.invoice.order.contact.address}</span>
+                    <span>{row.invoice.order.contact.postal_code} {row.invoice.order.contact.city}</span>
+                    <span>{row.invoice.order.contact.country}</span>
+                    <StyledTable>
+                      <Table<OrderLine>
+                        rows={row.invoice.lines}
+                        columns={{
+                          product: [{
+                            heading: 'Product',
+                            render: (value) => value.name,
+                            sortable: true
+                          }, {
+                            heading: 'Code',
+                            render: (value) => codeFormat(value.code),
+                            sortable: true
+                          }],
+                          amount: [{
+                            heading: 'Aantal',
+                            sortable: true
+                          }]
+                        }}
+                      />
+                    </StyledTable>
+                  </StyledExtra>
+                )}
+              />
+              <StyledTable>
+                <Table<Robot>
+                  rows={data.robots}
+                  columns={{
+                    id: [{
+                      heading: 'Code',
+                      render: codeFormat,
+                      sortable: true
+                    }],
+                    collecting: [{
+                      heading: 'Status',
+                      render: (value) => value ? `Verzamelen van bestelling ${codeFormat(value.id)}` : 'Wachten',
+                      sortable: true
+                    }]
+                  }}
+                  heading="Robots"
+                />
+              </StyledTable>
+            </>
           ) : (
             <Loading/>
           )}

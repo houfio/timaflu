@@ -1,6 +1,6 @@
 import { arg, booleanArg, idArg, intArg, queryType, stringArg } from 'yoga';
 
-import { Manufacturer, Order, Product, ProductRevenue, QueueLine, SelfOrder, User } from '../types';
+import { Manufacturer, Order, Product, ProductRevenue, QueueLine, Robot, SelfOrder, User } from '../types';
 import { execute } from '../utils/execute';
 
 export const Query = queryType({
@@ -217,6 +217,13 @@ export const Query = queryType({
           LIMIT :limit
         ` : ''}
       `, { limit })
+    });
+    t.list.field('robots', {
+      type: 'Robot',
+      resolve: (root, args, { db }) => execute<Robot>(db, `
+        SELECT *
+        FROM robot
+      `)
     });
   }
 });

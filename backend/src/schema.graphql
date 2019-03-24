@@ -125,6 +125,7 @@ type Query {
   productRevenue(limit: Int): [ProductRevenue!]!
   products(limit: Int, search: String, sold: Boolean, stock: Boolean): [Product!]!
   queue: [QueueLine!]!
+  robots: [Robot!]!
   selfOrder(id: ID!): SelfOrder
   selfOrders: [SelfOrder!]!
   user(id: ID!): User
@@ -139,6 +140,7 @@ type QueueLine {
 
 type Robot {
   code: String!
+  collecting: Invoice
   id: ID!
 }
 

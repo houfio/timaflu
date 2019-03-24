@@ -1,11 +1,14 @@
+import styled from '@emotion/styled/macro';
 import { gql } from 'apollo-boost';
 import React from 'react';
 import { Query } from 'react-apollo';
 import { Bar } from 'react-chartjs-2';
 
 import { Content } from '../components/Content';
+import { Heading } from '../components/Heading';
 import { Loading } from '../components/Loading';
 import { Identifiable } from '../types';
+import { priceFormat } from '../utils/priceFormat';
 
 type Product = Identifiable & {
   product: {
@@ -34,15 +37,81 @@ export function Dashboard() {
         <Content title="Dashboard">
           {!loading && data ? (
             <>
-              <Bar
-                data={{
-                  labels: data.productRevenue.map((revenue) => revenue.product.name),
-                  datasets: data.productRevenue.map((revenue) => ({
-                    label: revenue.product.name,
-                    data: [revenue.revenue]
-                  }))
-                }}
-              />
+              <Heading type="h2">
+                Best presterende producten
+              </Heading>
+              <StyledGraph>
+                <Bar
+                  data={{
+                    labels: data.productRevenue.map((revenue) => revenue.product.name),
+                    datasets: [{
+                      label: 'Aantal',
+                      type: 'line',
+                      data: data.productRevenue.map((revenue) => revenue.amount),
+                      yAxisID: 'y-axis-2',
+                      borderColor: 'dodgerblue',
+                      backgroundColor: 'dodgerblue'
+                    }, {
+                      label: 'Omzet',
+                      type: 'bar',
+                      data: data.productRevenue.map((revenue) => revenue.revenue),
+                      yAxisID: 'y-axis-1',
+                      backgroundColor: '#24292e',
+                      borderColor: '#24292e'
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    tooltips: {
+                      mode: 'label'
+                    },
+                    elements: {
+                      line: {
+                        fill: false
+                      }
+                    },
+                    scales: {
+                      xAxes: [
+                        {
+                          display: true,
+                          gridLines: {
+                            display: false
+                          }
+                        }
+                      ],
+                      yAxes: [
+                        {
+                          type: 'linear',
+                          display: true,
+                          position: 'left',
+                          id: 'y-axis-1',
+                          gridLines: {
+                            display: false
+                          },
+                          ticks: {
+                            callback: priceFormat
+                          }
+                        },
+                        {
+                          type: 'linear',
+                          display: true,
+                          position: 'right',
+                          id: 'y-axis-2',
+                          gridLines: {
+                            display: false
+                          },
+                          ticks: {
+                            callback: (value) => `x${value}`
+                          }
+                        }
+                      ]
+                    }
+                  }}
+                  legend={{
+                    position: 'bottom'
+                  }}
+                />
+              </StyledGraph>
             </>
           ) : (
             <Loading/>
@@ -52,3 +121,8 @@ export function Dashboard() {
     </Query>
   );
 }
+
+const StyledGraph = styled.div`
+  max-width: 37.5rem;
+  margin-top: 2rem;
+`;

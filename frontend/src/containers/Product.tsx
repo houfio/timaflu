@@ -167,10 +167,12 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
                 rows={data.product.substances}
                 columns={{
                   name: [{
-                    heading: 'Naam'
+                    heading: 'Naam',
+                    sortable: true
                   }],
                   amount: [{
-                    heading: 'Hoeveelheid'
+                    heading: 'Hoeveelheid',
+                    sortable: true
                   }]
                 }}
                 heading="Stoffen"

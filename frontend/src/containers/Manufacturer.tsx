@@ -111,15 +111,18 @@ export function Manufacturer({ match: { params: { id } } }: RouteComponentProps<
                 rows={data.manufacturer.products}
                 columns={{
                   name: [{
-                    heading: 'Naam'
+                    heading: 'Naam',
+                    sortable: true
                   }],
                   code: [{
                     heading: 'Code',
-                    render: codeFormat
+                    render: codeFormat,
+                    sortable: true
                   }],
                   price: [{
                     heading: 'Prijs',
-                    render: priceFormat
+                    render: priceFormat,
+                    sortable: true
                   }],
                   description_short: [{
                     heading: 'Beschrijving'

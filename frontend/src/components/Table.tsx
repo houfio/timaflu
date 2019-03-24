@@ -1,7 +1,7 @@
 import styled from '@emotion/styled/macro';
 import { faMinus, faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { ReactNode, useState } from 'react';
+import React, { Fragment, ReactNode, useState } from 'react';
 
 import { Breakpoint, Identifiable } from '../types';
 import { compare } from '../utils/compare';
@@ -20,13 +20,16 @@ type Props<T> = {
     }>
   },
   heading?: ReactNode,
-  onClick?: (row: T) => void
+  onClick?: (row: T) => void,
+  renderExtra?: (row: T) => ReactNode
 };
 
-export function Table<T extends Identifiable>({ rows, columns, heading, onClick }: Props<T>) {
+export function Table<T extends Identifiable>({ rows, columns, heading, onClick, renderExtra }: Props<T>) {
   const [sort, setSort] = useState<{ key: keyof T, index: number, reverse: boolean }>();
+  const [extra, setExtra] = useState<string>();
 
   const columnKeys = Object.keys(columns) as Array<keyof T>;
+  const totalRows = columnKeys.reduce((previous, current) => previous + Object.keys(columns[current]!).length, 0);
   const updateSort = (key: keyof T, index: number) => {
     if (!sort || key !== sort.key || index !== sort.index) {
       setSort({
@@ -92,24 +95,34 @@ export function Table<T extends Identifiable>({ rows, columns, heading, onClick 
               return compare(resultA, resultB) * (sort.reverse ? -1 : 1);
             })
             .map((row) => (
-              <StyledRow
-                key={row.id}
-                clickable={Boolean(onClick)}
-                onClick={() => onClick && onClick(row)}
-                tabIndex={onClick ? 0 : undefined}
-              >
-                {columnKeys.map((key) => columns[key]!.map((column, index) => {
-                  const children = column.render ? column.render(row[key], row) : row[key];
+              <Fragment key={row.id}>
+                <StyledRow
+                  clickable={Boolean(onClick || renderExtra)}
+                  onClick={() => onClick ? onClick(row) : setExtra(extra !== row.id ? row.id : undefined)}
+                  tabIndex={Boolean(onClick || renderExtra) ? 0 : undefined}
+                >
+                  {columnKeys.map((key) => columns[key]!.map((column, index) => {
+                    const children = column.render ? column.render(row[key], row) : row[key];
 
-                  return (
-                    <StyledData key={`${key}-${index}`} heading={column.heading}>
-                      {children ? children : (
-                        <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
-                      )}
-                    </StyledData>
-                  );
-                }))}
-              </StyledRow>
+                    return (
+                      <StyledData key={`${key}-${index}`} heading={column.heading}>
+                        {children ? children : (
+                          <FontAwesomeIcon icon={faMinus} fixedWidth={true} color="rgba(0, 0, 0, .1)"/>
+                        )}
+                      </StyledData>
+                    );
+                  }))}
+                </StyledRow>
+                {extra === row.id && renderExtra && (
+                  <tr>
+                    <StyledExtra colSpan={totalRows}>
+                      <StyledExtraInner>
+                        {renderExtra(row)}
+                      </StyledExtraInner>
+                    </StyledExtra>
+                  </tr>
+                )}
+              </Fragment>
             ))}
         </tbody>
       </StyledTable>
@@ -216,4 +229,14 @@ const StyledHeading = styled.th<{ sortable: boolean }>`
 const StyledSort = styled(FontAwesomeIcon, { shouldForwardProp: (name) => name !== 'enabled' })<{ enabled: boolean }>`
   opacity: ${(props) => props.enabled ? 1 : .25};
   transition: opacity .25s ease;
+`;
+
+const StyledExtra = styled.td`
+  padding-top: 1rem;
+`;
+
+const StyledExtraInner = styled.div`
+  padding: 1rem;
+  background-color: white;
+  border-radius: .5rem;
 `;

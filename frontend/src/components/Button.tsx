@@ -1,9 +1,22 @@
 import styled from '@emotion/styled/macro';
 import React, { HTMLProps } from 'react';
 
-export function Button(props: HTMLProps<HTMLButtonElement>) {
+type Props = {
+  onClick?: () => void
+};
+
+export function Button({ onClick, ...props }: Props & HTMLProps<HTMLButtonElement>) {
   return (
-    <StyledButton {...props}/>
+    <StyledButton
+      onClick={(e) => {
+        e.stopPropagation();
+
+        if (onClick) {
+          onClick();
+        }
+      }}
+      {...props}
+    />
   );
 }
 

@@ -134,7 +134,7 @@ type Query {
 type QueueLine {
   bins: [Bin!]!
   id: ID!
-  user: User!
+  invoice: Invoice!
 }
 
 type Robot {

@@ -1,6 +1,6 @@
 import { objectType } from 'yoga';
 
-import { Order, Product } from '../context';
+import { Order, Product } from '../types';
 import { execute } from '../utils/execute';
 
 export const OrderLine = objectType({

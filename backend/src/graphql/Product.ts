@@ -1,6 +1,6 @@
 import { objectType } from 'yoga';
 
-import { Manufacturer } from '../context';
+import { Manufacturer } from '../types';
 import { execute } from '../utils/execute';
 
 export const Product = objectType({

@@ -1,6 +1,6 @@
 import { objectType, stringArg } from 'yoga';
 
-import { Contact, Product } from '../context';
+import { Contact, Product } from '../types';
 import { execute } from '../utils/execute';
 
 export const Manufacturer = objectType({

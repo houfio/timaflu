@@ -1,8 +1,7 @@
 import { arg, booleanArg, idArg, intArg, queryType, stringArg } from 'yoga';
 
-import { Manufacturer, Order, Product, QueueLine, SelfOrder, User } from '../context';
+import { Manufacturer, Order, Product, ProductAmount, ProductRevenue, QueueLine, SelfOrder, User } from '../types';
 import { execute } from '../utils/execute';
-import { ProductRevenue } from '../types';
 
 export const Query = queryType({
   definition: (t) => {
@@ -214,7 +213,21 @@ export const Query = queryType({
           JOIN product p on l.product_id = p.id
         GROUP BY l.product_id
         ORDER BY sum(l.total) - p.price * sum(l.amount) DESC
-        LIMIT :top;
+        LIMIT :top
+      `, { top })
+    });
+    t.list.field('productAmount', {
+      type: 'ProductAmount',
+      args: {
+        top: intArg()
+      },
+      resolve: (root, { top }, { db }) => execute<ProductAmount>(db, `
+        SELECT p.id, sum(l.amount) amount
+        FROM product p
+          JOIN order_line l on p.id = l.product_id
+        GROUP BY p.id
+        ORDER BY sum(l.amount) DESC
+        LIMIT :top
       `, { top })
     });
   }

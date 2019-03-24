@@ -1,6 +1,6 @@
 import { objectType } from 'yoga';
 
-import { User } from '../context';
+import { User } from '../types';
 import { execute } from '../utils/execute';
 
 export const QueueLine = objectType({

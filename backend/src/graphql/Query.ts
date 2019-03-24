@@ -205,30 +205,18 @@ export const Query = queryType({
     t.list.field('productRevenue', {
       type: 'ProductRevenue',
       args: {
-        top: intArg()
+        limit: intArg({ nullable: true })
       },
-      resolve: (root, { top }, { db }) => execute<ProductRevenue>(db, `
-        SELECT p.id, sum(l.total) - p.price * sum(l.amount) revenue
-        FROM order_line l
-          JOIN product p on l.product_id = p.id
-        GROUP BY l.product_id
-        ORDER BY sum(l.total) - p.price * sum(l.amount) DESC
-        LIMIT :top
-      `, { top })
-    });
-    t.list.field('productAmount', {
-      type: 'ProductAmount',
-      args: {
-        top: intArg()
-      },
-      resolve: (root, { top }, { db }) => execute<ProductAmount>(db, `
-        SELECT p.id, sum(l.amount) amount
+      resolve: (root, { limit }, { db }) => execute<ProductRevenue>(db, `
+        SELECT p.id, sum(l.amount) amount, sum(l.total) - p.price * sum(l.amount) revenue
         FROM product p
           JOIN order_line l on p.id = l.product_id
         GROUP BY p.id
-        ORDER BY sum(l.amount) DESC
-        LIMIT :top
-      `, { top })
+        ORDER BY revenue DESC
+        ${limit !== undefined ? `
+          LIMIT :limit
+        ` : ''}
+      `, { limit })
     });
   }
 });

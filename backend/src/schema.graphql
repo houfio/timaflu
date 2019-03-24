@@ -99,13 +99,8 @@ type Product {
   substances: [Substance!]!
 }
 
-type ProductAmount {
-  amount: Int!
-  id: ID!
-  product: Product!
-}
-
 type ProductRevenue {
+  amount: Int!
   id: ID!
   product: Product!
   revenue: Float!
@@ -125,8 +120,7 @@ type Query {
   order(id: ID!): Order
   orders: [Order!]!
   product(id: ID!): Product
-  productAmount(top: Int!): [ProductAmount!]!
-  productRevenue(top: Int!): [ProductRevenue!]!
+  productRevenue(limit: Int): [ProductRevenue!]!
   products(limit: Int, search: String, sold: Boolean, stock: Boolean): [Product!]!
   queue: [QueueLine!]!
   selfOrder(id: ID!): SelfOrder

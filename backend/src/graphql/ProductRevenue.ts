@@ -20,6 +20,7 @@ export const ProductRevenue = objectType({
         return result[0];
       }
     });
+    t.int('amount');
     t.float('revenue');
   }
 });

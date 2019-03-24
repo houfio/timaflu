@@ -113,10 +113,6 @@ export type QueueLine = {
 
 export type ProductRevenue = {
   id: number,
+  amount: number,
   revenue: number
-};
-
-export type ProductAmount = {
-  id: number,
-  amount: number
 };

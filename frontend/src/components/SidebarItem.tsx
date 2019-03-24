@@ -15,10 +15,12 @@ type Props = {
 export function SidebarItem({ children, icon, path, exact }: Props) {
   const { history, location } = useRouter();
 
+  const actualPath = `${process.env.PUBLIC_URL}${path}`;
+
   return (
     <StyledItem
-      active={exact ? location.pathname === path : location.pathname.startsWith(path)}
-      onClick={() => history.push(`${process.env.PUBLIC_URL}${path}`)}
+      active={exact ? location.pathname === actualPath : location.pathname.startsWith(actualPath)}
+      onClick={() => history.push(actualPath)}
     >
       <StyledIcon icon={icon} fixedWidth={true}/>
       {children}

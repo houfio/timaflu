@@ -103,6 +103,7 @@ type ProductRevenue {
   amount: Int!
   id: ID!
   product: Product!
+  profit: Float!
   revenue: Float!
 }
 

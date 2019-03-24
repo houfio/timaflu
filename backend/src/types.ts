@@ -114,5 +114,6 @@ export type QueueLine = {
 export type ProductRevenue = {
   id: number,
   amount: number,
-  revenue: number
+  revenue: number,
+  profit: number
 };

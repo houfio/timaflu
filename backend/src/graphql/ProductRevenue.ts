@@ -22,5 +22,6 @@ export const ProductRevenue = objectType({
     });
     t.int('amount');
     t.float('revenue');
+    t.float('profit');
   }
 });

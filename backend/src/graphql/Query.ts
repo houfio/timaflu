@@ -1,6 +1,6 @@
 import { arg, booleanArg, idArg, intArg, queryType, stringArg } from 'yoga';
 
-import { Manufacturer, Order, Product, ProductAmount, ProductRevenue, QueueLine, SelfOrder, User } from '../types';
+import { Manufacturer, Order, Product, ProductRevenue, QueueLine, SelfOrder, User } from '../types';
 import { execute } from '../utils/execute';
 
 export const Query = queryType({
@@ -208,7 +208,7 @@ export const Query = queryType({
         limit: intArg({ nullable: true })
       },
       resolve: (root, { limit }, { db }) => execute<ProductRevenue>(db, `
-        SELECT p.id, sum(l.amount) amount, sum(l.total) - p.price * sum(l.amount) revenue
+        SELECT p.id, sum(l.amount) amount, sum(l.total) revenue, sum(l.total) - p.price * sum(l.amount) profit
         FROM product p
           JOIN order_line l on p.id = l.product_id
         GROUP BY p.id

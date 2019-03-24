@@ -92,9 +92,9 @@ export const Order = objectType({
     t.int('days_left', {
       resolve: async ({ id }, args, { db }) => {
         const query = `
-          SELECT ifnull(31 - datediff(now(), min(i.date)), 31) days_left
+          SELECT ifnull(31 - datediff(now(), min(i.send_date)), 31) days_left
           FROM \`order\` o
-            JOIN invoice i ON o.id = i.order_id AND i.state != 5
+            JOIN invoice i ON o.id = i.order_id AND i.state != 5 AND i.send_date
           WHERE o.id = :id;
         `;
         const result = await execute<{ days_left: number }>(db, query, { id });

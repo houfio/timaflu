@@ -73,8 +73,8 @@ export function Dashboard() {
           }
         });
 
-        const revenues = loading || !data ? [] : [...data.productRevenue]
-          .sort((a, b) => compare(b.revenue, a.revenue))
+        const profits = loading || !data ? [] : [...data.productRevenue]
+          .sort((a, b) => compare(b.profit, a.profit))
           .slice(0, 5);
         const amounts = loading || !data ? [] : [...data.productRevenue]
           .sort((a, b) => compare(b.amount, a.amount))
@@ -85,22 +85,22 @@ export function Dashboard() {
             {!loading && data ? (
               <>
                 <Heading type="h2">
-                  Producten met meeste omzet
+                  Producten met meeste winst
                 </Heading>
                 <StyledGraph>
                   <Bar
                     data={{
-                      labels: revenues.map((revenue) => revenue.product.name),
+                      labels: profits.map((revenue) => revenue.product.name),
                       datasets: [{
                         label: 'Winst',
                         type: 'line',
-                        data: revenues.map((revenue) => revenue.profit),
+                        data: profits.map((revenue) => revenue.profit),
                         borderColor: 'dodgerblue',
                         backgroundColor: 'dodgerblue'
                       }, {
                         label: 'Omzet',
                         type: 'bar',
-                        data: revenues.map((revenue) => revenue.revenue),
+                        data: profits.map((revenue) => revenue.revenue),
                         backgroundColor: '#24292e',
                         borderColor: '#24292e'
                       }]

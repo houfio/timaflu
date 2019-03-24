@@ -25,6 +25,7 @@ type Invoice {
   id: ID!
   lines: [InvoiceLine!]!
   order: Order!
+  send_date: String
   state: InvoiceState!
   tax: Int!
 }

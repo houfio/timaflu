@@ -25,6 +25,7 @@ export const Invoice = objectType({
     });
     t.int('tax');
     t.string('date');
+    t.string('send_date', { nullable: true });
     t.list.field('lines', {
       type: 'InvoiceLine',
       resolve: ({ id }, args, { db }) => execute(db, `

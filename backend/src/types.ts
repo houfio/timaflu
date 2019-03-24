@@ -54,6 +54,7 @@ export type Order = {
   billing_id: number,
   description?: string,
   date: string,
+  send_date?: string,
   discount: number
 };
 

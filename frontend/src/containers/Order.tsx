@@ -37,7 +37,7 @@ type OrderLine = Identifiable & {
 
 type Invoice = Identifiable & {
   state: InvoiceState,
-  date: string,
+  send_date?: string,
   lines: Identifiable[]
 };
 
@@ -83,7 +83,7 @@ const query = gql`
       invoices {
         id
         state
-        date
+        send_date
         lines {
           id
         }
@@ -220,9 +220,9 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
                     heading: 'Code',
                     render: codeFormat
                   }],
-                  date: [{
-                    heading: 'Datum',
-                    render: (value) => format(Number(value), 'PPPP', { locale: nl }),
+                  send_date: [{
+                    heading: 'Verstuurd op',
+                    render: (value) => value ? format(Number(value), 'PPPP', { locale: nl }) : undefined,
                     sortable: true
                   }],
                   lines: [{
@@ -231,7 +231,7 @@ export function Order({ match: { params: { id } } }: RouteComponentProps<Params>
                     sortable: true
                   }, {
                     heading: '',
-                    render: (value, row) => row.state === 'SENT' ? (
+                    render: (value, row) => !row.send_date && row.state === 'SENT' ? (
                       <Button>
                         Factureer
                       </Button>

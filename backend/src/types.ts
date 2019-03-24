@@ -110,3 +110,8 @@ export type SelfOrderLine = {
 export type QueueLine = {
   id: number
 };
+
+export type ProductRevenue = {
+  id: number,
+  revenue: number
+};

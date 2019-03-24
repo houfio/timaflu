@@ -99,6 +99,12 @@ type Product {
   substances: [Substance!]!
 }
 
+type ProductRevenue {
+  id: ID!
+  product: Product!
+  revenue: Float!
+}
+
 enum ProductState {
   ABOVE_MIN
   BELOW_MIN
@@ -113,6 +119,7 @@ type Query {
   order(id: ID!): Order
   orders: [Order!]!
   product(id: ID!): Product
+  productRevenue(top: Int!): [ProductRevenue!]!
   products(limit: Int, search: String, sold: Boolean, stock: Boolean): [Product!]!
   queue: [QueueLine!]!
   selfOrder(id: ID!): SelfOrder

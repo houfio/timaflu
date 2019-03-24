@@ -130,7 +130,7 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
           </StyledDescription>
           <StyledRow spacing={1}>
             <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
-              <StyledContact>
+              <StyledBox>
                 <Heading type="h2">
                   Informatie
                 </Heading>
@@ -142,11 +142,11 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
                 <span>Verpakking: {fallback(data.product.packaging)}</span>
                 <span>Hoeveelheid: {fallback(data.product.packaging_amount)}</span>
                 <span>Verpakkingsformaat: {fallback(data.product.packaging_size)}</span>
-              </StyledContact>
+              </StyledBox>
             </Column>
             <Column breakpoints={{ [Breakpoint.Desktop]: 6 }}>
-              <StyledContact>
-                <Heading type="h2" onClick={() => history.push(`/manufacturers/${data.product.manufacturer.id}`)}>
+              <StyledBox>
+                <Heading type="h2">
                   Fabrikant
                 </Heading>
                 <span>{data.product.manufacturer.contact.company}</span>
@@ -159,7 +159,7 @@ export function Product({ match: { params: { id } } }: RouteComponentProps<Param
                     Website
                   </Button>
                 </StyledWebsite>
-              </StyledContact>
+              </StyledBox>
             </Column>
           </StyledRow>
           <Table<Substances>
@@ -194,7 +194,7 @@ const StyledRow = styled(Row)`
   padding: 1rem 0;
 `;
 
-const StyledContact = styled.div`
+const StyledBox = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem;

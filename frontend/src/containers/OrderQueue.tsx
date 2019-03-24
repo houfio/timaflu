@@ -48,7 +48,8 @@ export function OrderQueue() {
           columns={{
             id: [{
               heading: 'Factuur',
-              render: codeFormat
+              render: codeFormat,
+              sortable: true
             }],
             user: [{
               heading: 'Klant',

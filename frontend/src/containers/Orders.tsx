@@ -13,9 +13,9 @@ import { INVOICE_STATES } from '../constants';
 import { useRouter } from '../hooks/useRouter';
 import { Breakpoint, Identifiable, InvoiceState } from '../types';
 import { codeFormat } from '../utils/codeFormat';
+import { forBreakpoint } from '../utils/forBreakpoint';
 import { priceFormat } from '../utils/priceFormat';
 import { truncate } from '../utils/truncate';
-import { forBreakpoint } from '../utils/forBreakpoint';
 
 type Order = Identifiable & {
   date: string,

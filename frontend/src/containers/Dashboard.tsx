@@ -126,7 +126,7 @@ export function Dashboard() {
                         borderColor: '#24292e'
                       }]
                     }}
-                    options={options(String)}
+                    options={options((value) => `${value}x`)}
                     legend={{
                       position: 'bottom'
                     }}

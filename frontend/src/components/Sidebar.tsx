@@ -22,7 +22,7 @@ export function Sidebar() {
         <StyledLogo icon={faPills} size="2x"/>
         Timaflu
       </StyledBrand>
-      <SidebarItem icon={faTachometerAlt} path="/" exact={true}>
+      <SidebarItem icon={faTachometerAlt} path="" exact={true}>
         Dashboard
       </SidebarItem>
       <SidebarItem icon={faTruck} path="/orders">
